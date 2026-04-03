@@ -44,7 +44,10 @@ export interface Agent {
   approvalTool?: string
   approvalInput?: string
   tokenCount: number
+  maxTokens: number
   turnCount: number
+  filesModified: number
+  linesChanged: number
 }
 
 const now = new Date()
@@ -87,7 +90,10 @@ export const agents: Agent[] = [
       },
     ],
     tokenCount: 284_300,
+    maxTokens: 1_000_000,
     turnCount: 12,
+    filesModified: 4,
+    linesChanged: 127,
   },
   {
     sessionId: 'sess_d4e5f6',
@@ -112,7 +118,10 @@ export const agents: Agent[] = [
     ],
     subagents: [],
     tokenCount: 156_800,
+    maxTokens: 1_000_000,
     turnCount: 8,
+    filesModified: 2,
+    linesChanged: 43,
   },
   {
     sessionId: 'sess_g7h8i9',
@@ -148,7 +157,10 @@ export const agents: Agent[] = [
       },
     ],
     tokenCount: 98_400,
+    maxTokens: 1_000_000,
     turnCount: 6,
+    filesModified: 1,
+    linesChanged: 89,
   },
   {
     sessionId: 'sess_j0k1l2',
@@ -171,7 +183,10 @@ export const agents: Agent[] = [
     ],
     subagents: [],
     tokenCount: 342_100,
+    maxTokens: 1_000_000,
     turnCount: 19,
+    filesModified: 7,
+    linesChanged: 312,
   },
   {
     sessionId: 'sess_m3n4o5',
@@ -197,7 +212,10 @@ export const agents: Agent[] = [
     ],
     subagents: [],
     tokenCount: 67_200,
+    maxTokens: 1_000_000,
     turnCount: 4,
+    filesModified: 3,
+    linesChanged: 156,
   },
   {
     sessionId: 'sess_p6q7r8',
@@ -232,7 +250,10 @@ export const agents: Agent[] = [
       },
     ],
     tokenCount: 512_900,
+    maxTokens: 1_000_000,
     turnCount: 31,
+    filesModified: 5,
+    linesChanged: 478,
   },
 ]
 
@@ -252,7 +273,7 @@ export function phaseColor(phase: Phase): string {
     case 'processing': return 'var(--text-display)'
     case 'waiting_for_approval': return 'var(--accent)'
     case 'waiting_for_input': return 'var(--warning)'
-    case 'idle': return 'var(--text-secondary)'
+    case 'idle': return 'var(--text-disabled)'
     case 'compacting': return 'var(--interactive)'
     case 'ended': return 'var(--text-disabled)'
   }
@@ -260,17 +281,24 @@ export function phaseColor(phase: Phase): string {
 
 export function timeAgo(date: Date): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
-  if (seconds < 60) return `${seconds}s ago`
+  if (seconds < 60) return `${seconds}s`
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes}m ago`
+  if (minutes < 60) return `${minutes}m`
   const hours = Math.floor(minutes / 60)
-  return `${hours}h ${minutes % 60}m ago`
+  if (hours < 24) return `${hours}h ${minutes % 60}m`
+  return `${Math.floor(hours / 24)}d`
 }
 
 export function formatTokens(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`
   return String(n)
+}
+
+export function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`
+  return `${Math.floor(ms / 60_000)}m ${Math.floor((ms % 60_000) / 1000)}s`
 }
 
 export function toolStatusColor(status: ToolStatus): string {
@@ -281,4 +309,12 @@ export function toolStatusColor(status: ToolStatus): string {
     case 'interrupted': return 'var(--warning)'
     case 'waiting_for_approval': return 'var(--accent)'
   }
+}
+
+export function sessionDuration(agent: Agent): string {
+  const ms = Date.now() - agent.createdAt.getTime()
+  const minutes = Math.floor(ms / 60_000)
+  if (minutes < 60) return `${minutes}m`
+  const hours = Math.floor(minutes / 60)
+  return `${hours}h ${minutes % 60}m`
 }

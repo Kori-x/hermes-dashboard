@@ -1,20 +1,23 @@
 :root {
   --black: #000000;
-  --surface: #111111;
-  --surface-raised: #1a1a1a;
-  --border: #222222;
-  --border-visible: #333333;
-  --text-disabled: #666666;
-  --text-secondary: #999999;
-  --text-primary: #e8e8e8;
+  --surface: #0a0a0a;
+  --surface-raised: #141414;
+  --border: #1e1e1e;
+  --border-visible: #2a2a2a;
+  --text-disabled: #555555;
+  --text-secondary: #888888;
+  --text-primary: #d4d4d4;
   --text-display: #ffffff;
 
   --accent: #d71921;
-  --accent-subtle: rgba(215, 25, 33, 0.15);
+  --accent-subtle: rgba(215, 25, 33, 0.12);
   --success: #4a9e5c;
+  --success-subtle: rgba(74, 158, 92, 0.12);
   --warning: #d4a843;
+  --warning-subtle: rgba(212, 168, 67, 0.12);
   --interactive: #5b9bf6;
 
+  --space-2xs: 2px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
@@ -22,12 +25,16 @@
   --space-xl: 32px;
   --space-2xl: 48px;
   --space-3xl: 64px;
+  --space-4xl: 96px;
 
   --font-display: 'Doto', 'Space Mono', monospace;
   --font-body: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
   --font-mono: 'Space Mono', 'JetBrains Mono', 'SF Mono', monospace;
 
   --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 * {
@@ -36,26 +43,45 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+}
+
 body {
   font-family: var(--font-body);
   background: var(--black);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 ::selection {
-  background: var(--border-visible);
+  background: rgba(255, 255, 255, 0.12);
   color: var(--text-display);
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border-visible);
-  border-radius: 3px;
+  border-radius: 2px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }

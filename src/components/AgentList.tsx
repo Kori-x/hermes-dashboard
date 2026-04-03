@@ -1,9 +1,47 @@
-import { type Agent, phaseLabel, phaseColor, timeAgo } from '../data'
+import { type Agent, phaseLabel, phaseColor, timeAgo, formatTokens } from '../data'
 
 interface Props {
   agents: Agent[]
   selected: Agent | null
   onSelect: (agent: Agent) => void
+}
+
+function MiniBar({ agent }: { agent: Agent }) {
+  const all = [...agent.recentTools, ...agent.toolsInProgress]
+  if (all.length === 0) return null
+
+  return (
+    <div className="agent-mini-bar">
+      {all.slice(-10).map((tool, i) => {
+        const isRunning = tool.status === 'running'
+        const bg = isRunning
+          ? 'var(--text-display)'
+          : tool.status === 'error'
+            ? 'var(--accent)'
+            : 'var(--success)'
+
+        return (
+          <div
+            key={i}
+            className="agent-mini-seg"
+            style={{
+              background: bg,
+              animation: isRunning ? 'pulse 1s var(--ease) infinite' : undefined,
+            }}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+function PhaseDot({ phase }: { phase: Agent['phase'] }) {
+  const cls = phase === 'processing' ? 'processing'
+    : phase === 'waiting_for_approval' ? 'approval'
+    : phase === 'waiting_for_input' ? 'waiting'
+    : 'idle'
+
+  return <span className={`phase-dot ${cls}`} />
 }
 
 export function AgentList({ agents, selected, onSelect }: Props) {
@@ -22,40 +60,58 @@ export function AgentList({ agents, selected, onSelect }: Props) {
   })
 
   return (
-    <div className="agent-list">
-      {sorted.map(agent => (
-        <div
-          key={agent.sessionId}
-          className={`agent-card${selected?.sessionId === agent.sessionId ? ' selected' : ''}`}
-          onClick={() => onSelect(agent)}
-        >
-          <div className="agent-card-top">
-            <span className="agent-title">{agent.displayTitle}</span>
-            <span className="agent-phase" style={{ color: phaseColor(agent.phase) }}>
-              {phaseLabel(agent.phase)}
-            </span>
-          </div>
+    <div className="agent-list-wrap">
+      <div className="section-label">AGENTS ({agents.length})</div>
+      <div className="agent-list">
+        {sorted.map(agent => {
+          const isSelected = selected?.sessionId === agent.sessionId
+          const isApproval = agent.phase === 'waiting_for_approval'
 
-          {agent.phase === 'waiting_for_approval' && agent.approvalTool && (
-            <div className="approval-badge">
-              {agent.approvalTool}: {agent.approvalInput}
+          return (
+            <div
+              key={agent.sessionId}
+              className={[
+                'agent-card',
+                isSelected && 'selected',
+                isApproval && 'needs-approval',
+              ].filter(Boolean).join(' ')}
+              onClick={() => onSelect(agent)}
+            >
+              <div className="agent-card-row">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                  <PhaseDot phase={agent.phase} />
+                  <span className="agent-title">{agent.displayTitle}</span>
+                </div>
+                <span className="agent-phase" style={{ color: phaseColor(agent.phase) }}>
+                  {phaseLabel(agent.phase)}
+                </span>
+              </div>
+
+              {agent.toolsInProgress.length > 0 && (
+                <div className="agent-tool-row">
+                  <span className="tool-name">{agent.toolsInProgress[0].name}</span>
+                  <span className="tool-input">{agent.toolsInProgress[0].input}</span>
+                </div>
+              )}
+
+              {isApproval && agent.approvalTool && (
+                <div className="approval-inline">
+                  {agent.approvalTool}: {agent.approvalInput}
+                </div>
+              )}
+
+              <div className="agent-card-row">
+                <div className="agent-card-meta">
+                  <span>{agent.projectName}</span>
+                  <span>{formatTokens(agent.tokenCount)}</span>
+                  <span>{timeAgo(agent.lastActivity)}</span>
+                </div>
+                <MiniBar agent={agent} />
+              </div>
             </div>
-          )}
-
-          {agent.toolsInProgress.length > 0 && (
-            <div className="agent-tool-active">
-              <span className={`tool-dot ${agent.phase === 'waiting_for_approval' ? 'approval' : 'running'}`} />
-              {agent.toolsInProgress[0].name}
-              <span className="tool-input">{agent.toolsInProgress[0].input}</span>
-            </div>
-          )}
-
-          <div className="agent-card-bottom">
-            <span className="agent-project">{agent.projectName}</span>
-            <span className="agent-time">{timeAgo(agent.lastActivity)}</span>
-          </div>
-        </div>
-      ))}
+          )
+        })}
+      </div>
     </div>
   )
 }

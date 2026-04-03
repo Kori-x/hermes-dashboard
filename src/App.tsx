@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { agents, type Agent } from './data'
 import { Header } from './components/Header'
+import { HeroSection, StatusRow, AttentionBanner } from './components/Stats'
 import { AgentList } from './components/AgentList'
 import { AgentDetail } from './components/AgentDetail'
-import { Stats } from './components/Stats'
 import './app.css'
 
 export default function App() {
@@ -15,11 +15,21 @@ export default function App() {
     return () => clearInterval(id)
   }, [])
 
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setSelected(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   return (
     <div className="app" key={tick}>
-      <Header agentCount={agents.length} />
-      <Stats agents={agents} />
-      <div className="main">
+      <Header />
+      <HeroSection agents={agents} />
+      <StatusRow agents={agents} />
+      <AttentionBanner agents={agents} />
+      <div className={`main${selected ? '' : ' no-detail'}`}>
         <AgentList
           agents={agents}
           selected={selected}

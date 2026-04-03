@@ -1,18 +1,19 @@
-export function Header({ agentCount }: { agentCount: number }) {
+export function Header() {
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false })
+  const date = new Date().toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).toUpperCase()
+
   return (
     <header className="header">
-      <h1 className="header-title">HERMES</h1>
-      <div className="header-meta">
-        <span className="header-label">
-          <span className="header-dot" />
-          SYSTEM ONLINE
-        </span>
-        <span className="header-label">
-          AGENTS <span className="header-count">{agentCount}</span>
-        </span>
-        <span className="header-label">
-          {new Date().toLocaleTimeString('en-US', { hour12: false })}
-        </span>
+      <div className="header-left">
+        <h1 className="header-title">HERMES</h1>
+      </div>
+      <div className="header-right">
+        <span className="header-label">{date}</span>
+        <span className="header-label">{time}</span>
       </div>
     </header>
   )
