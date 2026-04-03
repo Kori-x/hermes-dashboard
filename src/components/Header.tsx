@@ -1,10 +1,8 @@
-export function Header() {
+import { type Agent } from '../data'
+
+export function Header({ agents }: { agents: Agent[] }) {
   const time = new Date().toLocaleTimeString('en-US', { hour12: false })
-  const date = new Date().toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  }).toUpperCase()
+  const totalCost = agents.reduce((s, a) => s + a.costUsd, 0)
 
   return (
     <header className="header">
@@ -12,7 +10,7 @@ export function Header() {
         <h1 className="header-title">HERMES</h1>
       </div>
       <div className="header-right">
-        <span className="header-label">{date}</span>
+        <span className="header-label">COST <span className="header-value">${totalCost.toFixed(2)}</span></span>
         <span className="header-label">{time}</span>
       </div>
     </header>

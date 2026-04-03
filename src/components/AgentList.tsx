@@ -1,4 +1,4 @@
-import { type Agent, phaseLabel, phaseColor, timeAgo, formatTokens } from '../data'
+import { type Agent, phaseLabel, phaseColor, timeAgo, formatTokens, sessionDuration } from '../data'
 
 interface Props {
   agents: Agent[]
@@ -19,7 +19,6 @@ function MiniBar({ agent }: { agent: Agent }) {
           : tool.status === 'error'
             ? 'var(--accent)'
             : 'var(--success)'
-
         return (
           <div
             key={i}
@@ -35,12 +34,29 @@ function MiniBar({ agent }: { agent: Agent }) {
   )
 }
 
+function ContextMini({ used, max }: { used: number; max: number }) {
+  const pct = Math.min(used / max, 1)
+  const totalSegs = 8
+  const filled = Math.round(pct * totalSegs)
+  const color = pct > 0.8 ? 'var(--accent)' : pct > 0.5 ? 'var(--warning)' : 'var(--border-visible)'
+  return (
+    <div className="context-mini">
+      {Array.from({ length: totalSegs }).map((_, i) => (
+        <div
+          key={i}
+          className="context-mini-seg"
+          style={{ background: i < filled ? color : 'var(--border)' }}
+        />
+      ))}
+    </div>
+  )
+}
+
 function PhaseDot({ phase }: { phase: Agent['phase'] }) {
   const cls = phase === 'processing' ? 'processing'
     : phase === 'waiting_for_approval' ? 'approval'
     : phase === 'waiting_for_input' ? 'waiting'
     : 'idle'
-
   return <span className={`phase-dot ${cls}`} />
 }
 
@@ -61,7 +77,7 @@ export function AgentList({ agents, selected, onSelect }: Props) {
 
   return (
     <div className="agent-list-wrap">
-      <div className="section-label">AGENTS ({agents.length})</div>
+      <div className="section-label">INSTANCES ({agents.length})</div>
       <div className="agent-list">
         {sorted.map(agent => {
           const isSelected = selected?.sessionId === agent.sessionId
@@ -102,11 +118,19 @@ export function AgentList({ agents, selected, onSelect }: Props) {
 
               <div className="agent-card-row">
                 <div className="agent-card-meta">
-                  <span>{agent.projectName}</span>
+                  <span>{agent.tmuxTarget}</span>
                   <span>{formatTokens(agent.tokenCount)}</span>
+                  <span>{sessionDuration(agent)}</span>
                   <span>{timeAgo(agent.lastActivity)}</span>
                 </div>
                 <MiniBar agent={agent} />
+              </div>
+
+              <div className="agent-card-row">
+                <ContextMini used={agent.tokenCount} max={agent.maxTokens} />
+                <span className="agent-card-meta">
+                  <span>${agent.costUsd.toFixed(2)}</span>
+                </span>
               </div>
             </div>
           )

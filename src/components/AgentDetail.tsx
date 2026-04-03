@@ -20,37 +20,20 @@ function ContextRing({ used, max }: { used: number; max: number }) {
   const r = 32
   const circumference = 2 * Math.PI * r
   const offset = circumference * (1 - pct)
-
-  const color = pct > 0.8
-    ? 'var(--accent)'
-    : pct > 0.5
-      ? 'var(--warning)'
-      : 'var(--text-display)'
+  const color = pct > 0.8 ? 'var(--accent)' : pct > 0.5 ? 'var(--warning)' : 'var(--text-display)'
 
   return (
     <div className="context-ring-wrap">
       <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r={r} fill="none" stroke="var(--border)" strokeWidth="3" />
         <circle
-          cx="40" cy="40" r={r}
-          fill="none"
-          stroke="var(--border)"
-          strokeWidth="3"
-        />
-        <circle
-          cx="40" cy="40" r={r}
-          fill="none"
-          stroke={color}
-          strokeWidth="3"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="butt"
-          transform="rotate(-90 40 40)"
+          cx="40" cy="40" r={r} fill="none" stroke={color} strokeWidth="3"
+          strokeDasharray={circumference} strokeDashoffset={offset}
+          strokeLinecap="butt" transform="rotate(-90 40 40)"
           style={{ transition: 'stroke-dashoffset 300ms var(--ease)' }}
         />
       </svg>
-      <span className="context-ring-label" style={{ color }}>
-        {Math.round(pct * 100)}%
-      </span>
+      <span className="context-ring-label" style={{ color }}>{Math.round(pct * 100)}%</span>
     </div>
   )
 }
@@ -59,31 +42,20 @@ function ContextBar({ agent }: { agent: Agent }) {
   const pct = agent.tokenCount / agent.maxTokens
   const totalSegments = 24
   const filled = Math.round(pct * totalSegments)
-
-  const color = pct > 0.8
-    ? 'var(--accent)'
-    : pct > 0.5
-      ? 'var(--warning)'
-      : 'var(--text-display)'
+  const color = pct > 0.8 ? 'var(--accent)' : pct > 0.5 ? 'var(--warning)' : 'var(--text-display)'
 
   return (
     <div className="context-bar">
       <div className="context-bar-header">
         <span className="context-bar-label">CONTEXT WINDOW</span>
-        <span className="context-bar-value">
-          {formatTokens(agent.tokenCount)} / {formatTokens(agent.maxTokens)}
-        </span>
+        <span className="context-bar-value">{formatTokens(agent.tokenCount)} / {formatTokens(agent.maxTokens)}</span>
       </div>
       <div className="context-segments">
         {Array.from({ length: totalSegments }).map((_, i) => (
-          <div
-            key={i}
-            className="context-seg"
-            style={{
-              background: i < filled ? color : 'var(--border)',
-              animation: i === filled - 1 && agent.phase === 'processing' ? 'pulse 1.5s var(--ease) infinite' : undefined,
-            }}
-          />
+          <div key={i} className="context-seg" style={{
+            background: i < filled ? color : 'var(--border)',
+            animation: i === filled - 1 && agent.phase === 'processing' ? 'pulse 1.5s var(--ease) infinite' : undefined,
+          }} />
         ))}
       </div>
     </div>
@@ -93,7 +65,6 @@ function ContextBar({ agent }: { agent: Agent }) {
 function ToolSegments({ agent }: { agent: Agent }) {
   const all = [...agent.recentTools, ...agent.toolsInProgress]
   if (all.length === 0) return null
-
   const maxSegments = 20
 
   return (
@@ -105,24 +76,12 @@ function ToolSegments({ agent }: { agent: Agent }) {
       <div className="segments">
         {Array.from({ length: maxSegments }).map((_, i) => {
           const tool = all[i]
-          if (!tool) {
-            return <div key={i} className="segment" style={{ background: 'var(--border)' }} />
-          }
-
+          if (!tool) return <div key={i} className="segment" style={{ background: 'var(--border)' }} />
           const isRunning = tool.status === 'running'
-          const bg = tool.status === 'error'
-            ? 'var(--accent)'
-            : isRunning
-              ? 'var(--text-display)'
-              : 'var(--success)'
-
+          const bg = tool.status === 'error' ? 'var(--accent)' : isRunning ? 'var(--text-display)' : 'var(--success)'
           return (
-            <div
-              key={i}
-              className={`segment${isRunning ? ' active' : ''}`}
-              style={{ background: bg }}
-              title={`${tool.name} ${tool.input}`}
-            />
+            <div key={i} className={`segment${isRunning ? ' active' : ''}`}
+              style={{ background: bg }} title={`${tool.name} ${tool.input}`} />
           )
         })}
       </div>
@@ -134,20 +93,13 @@ function ToolRow({ tool }: { tool: ToolCall }) {
   return (
     <div className="tool-row">
       <div className="tool-row-left">
-        <span
-          className="tool-status-dot"
-          style={{ background: toolStatusColor(tool.status) }}
-        />
+        <span className="tool-status-dot" style={{ background: toolStatusColor(tool.status) }} />
         <span className="tool-name">{tool.name}</span>
         <span className="tool-input">{tool.input}</span>
       </div>
       <div className="tool-row-right">
-        {tool.durationMs != null && (
-          <span className="tool-duration">{formatDuration(tool.durationMs)}</span>
-        )}
-        {tool.status === 'running' && (
-          <span className="tool-running">running</span>
-        )}
+        {tool.durationMs != null && <span className="tool-duration">{formatDuration(tool.durationMs)}</span>}
+        {tool.status === 'running' && <span className="tool-running">running</span>}
       </div>
     </div>
   )
@@ -160,13 +112,8 @@ export function AgentDetail({ agent, onClose }: Props) {
         <div className="detail-hero-left">
           <div className="detail-title">{agent.displayTitle}</div>
           <div className="detail-phase-row">
-            <span
-              className="phase-dot"
-              style={{ background: phaseColor(agent.phase) }}
-            />
-            <span className="agent-phase" style={{ color: phaseColor(agent.phase) }}>
-              {phaseLabel(agent.phase)}
-            </span>
+            <span className="phase-dot" style={{ background: phaseColor(agent.phase) }} />
+            <span className="agent-phase" style={{ color: phaseColor(agent.phase) }}>{phaseLabel(agent.phase)}</span>
           </div>
         </div>
         <ContextRing used={agent.tokenCount} max={agent.maxTokens} />
@@ -190,6 +137,22 @@ export function AgentDetail({ agent, onClose }: Props) {
           <span className="detail-metric-label">LINES</span>
           <span className="detail-metric-value">{agent.linesChanged}</span>
         </div>
+        <div className="detail-metric">
+          <span className="detail-metric-label">COST</span>
+          <span className="detail-metric-value">${agent.costUsd.toFixed(2)}</span>
+        </div>
+        <div className="detail-metric">
+          <span className="detail-metric-label">UPTIME</span>
+          <span className="detail-metric-value">{sessionDuration(agent)}</span>
+        </div>
+        <div className="detail-metric">
+          <span className="detail-metric-label">PID</span>
+          <span className="detail-metric-value">{agent.pid}</span>
+        </div>
+        <div className="detail-metric">
+          <span className="detail-metric-label">TMUX</span>
+          <span className="detail-metric-value">{agent.tmuxTarget}</span>
+        </div>
       </div>
 
       <ContextBar agent={agent} />
@@ -200,9 +163,7 @@ export function AgentDetail({ agent, onClose }: Props) {
             <span className="attention-dot" />
             PENDING APPROVAL
           </div>
-          <div className="approval-block-cmd">
-            {agent.approvalTool}: {agent.approvalInput}
-          </div>
+          <div className="approval-block-cmd">{agent.approvalTool}: {agent.approvalInput}</div>
           <div className="approval-actions">
             <button className="btn-approve">APPROVE</button>
             <button className="btn-deny">DENY</button>
@@ -211,9 +172,7 @@ export function AgentDetail({ agent, onClose }: Props) {
       )}
 
       <div className="last-message">
-        <div className="last-message-label">
-          LAST MESSAGE / {agent.lastMessageRole.toUpperCase()}
-        </div>
+        <div className="last-message-label">LAST MESSAGE / {agent.lastMessageRole.toUpperCase()}</div>
         <div className="last-message-text">{agent.lastMessage}</div>
       </div>
 
@@ -247,24 +206,16 @@ export function AgentDetail({ agent, onClose }: Props) {
 
       <div className="detail-info">
         <div className="detail-info-item">
-          <span className="detail-info-label">PROJECT</span>
-          <span className="detail-info-value">{agent.projectName}</span>
-        </div>
-        <div className="detail-info-item">
           <span className="detail-info-label">SESSION</span>
           <span className="detail-info-value">{agent.sessionId}</span>
         </div>
         <div className="detail-info-item">
-          <span className="detail-info-label">PID</span>
-          <span className="detail-info-value">{agent.pid}</span>
+          <span className="detail-info-label">CWD</span>
+          <span className="detail-info-value">{agent.cwd}</span>
         </div>
         <div className="detail-info-item">
           <span className="detail-info-label">TTY</span>
           <span className="detail-info-value">{agent.tty}</span>
-        </div>
-        <div className="detail-info-item">
-          <span className="detail-info-label">UPTIME</span>
-          <span className="detail-info-value">{sessionDuration(agent)}</span>
         </div>
         <div className="detail-info-item">
           <span className="detail-info-label">LAST ACTIVE</span>

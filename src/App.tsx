@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
-import { agents, type Agent } from './data'
+import { agents, activityFeed, type Agent } from './data'
 import { Header } from './components/Header'
-import { HeroSection, StatusRow, AttentionBanner } from './components/Stats'
+import { HeroSection, AttentionBanner } from './components/Stats'
 import { AgentList } from './components/AgentList'
 import { AgentDetail } from './components/AgentDetail'
+import { ToolBreakdown } from './components/ToolBreakdown'
+import { ActivityFeed } from './components/ActivityFeed'
+import { SessionTimeline } from './components/SessionTimeline'
 import './app.css'
 
 export default function App() {
@@ -25,20 +28,23 @@ export default function App() {
 
   return (
     <div className="app" key={tick}>
-      <Header />
+      <Header agents={agents} />
       <HeroSection agents={agents} />
-      <StatusRow agents={agents} />
       <AttentionBanner agents={agents} />
-      <div className={`main${selected ? '' : ' no-detail'}`}>
-        <AgentList
-          agents={agents}
-          selected={selected}
-          onSelect={setSelected}
-        />
-        {selected && (
+
+      <div className="main">
+        <AgentList agents={agents} selected={selected} onSelect={setSelected} />
+        {selected ? (
           <AgentDetail agent={selected} onClose={() => setSelected(null)} />
+        ) : (
+          <div className="sidebar">
+            <ToolBreakdown agents={agents} />
+            <ActivityFeed events={activityFeed} />
+          </div>
         )}
       </div>
+
+      <SessionTimeline agents={agents} />
     </div>
   )
 }
