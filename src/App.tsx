@@ -13,10 +13,10 @@ import './app.css'
 export default function App() {
   const { agents, activityFeed, connected } = useHermes()
   const [selected, setSelected] = useState<Agent | null>(null)
-  const [tick, setTick] = useState(0)
+  const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
-    const id = setInterval(() => setTick(t => t + 1), 1000)
+    const id = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(id)
   }, [])
 
@@ -34,7 +34,7 @@ export default function App() {
     : null
 
   return (
-    <div className="app" key={tick}>
+    <div className="app" key={now}>
       <Header agents={agents} connected={connected} />
       <HeroSection agents={agents} />
       <AttentionBanner agents={agents} />
@@ -51,7 +51,7 @@ export default function App() {
         )}
       </div>
 
-      <SessionTimeline agents={agents} />
+      <SessionTimeline agents={agents} now={now} />
     </div>
   )
 }
