@@ -292,7 +292,7 @@ export const agents: Agent[] = [
   },
 ]
 
-export const activityFeed: ActivityEvent[] = [
+export const activityFeed = [
   { id: 'e1', sessionId: 'sess_8a1f3d', agentTitle: 'stripe migration', type: 'tool', content: 'Edit src/webhooks/stripe.ts', timestamp: ago(0.1), color: 'var(--text-display)' },
   { id: 'e2', sessionId: 'sess_f5d9a2', agentTitle: 'e2e encryption', type: 'tool', content: 'Write key-exchange.ts', timestamp: ago(0.2), color: 'var(--text-display)' },
   { id: 'e3', sessionId: 'sess_b4c8d1', agentTitle: 'openapi spec', type: 'tool', content: 'Write generate-openapi.ts', timestamp: ago(0.3), color: 'var(--text-display)' },
@@ -305,7 +305,8 @@ export const activityFeed: ActivityEvent[] = [
   { id: 'e10', sessionId: 'sess_e3f2a9', agentTitle: 'timezone bug', type: 'phase', content: 'Waiting for input', timestamp: ago(6), color: 'var(--warning)' },
   { id: 'e11', sessionId: 'sess_a7e1b3', agentTitle: 'k8s autoscaler', type: 'phase', content: 'Session idle', timestamp: ago(18), color: 'var(--text-disabled)' },
   { id: 'e12', sessionId: 'sess_f5d9a2', agentTitle: 'e2e encryption', type: 'tool', content: 'Write crypto/types.ts', timestamp: ago(8), color: 'var(--success)' },
-].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+] satisfies ActivityEvent[]
+activityFeed.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
 
 export function phaseLabel(phase: Phase): string {
   switch (phase) {
