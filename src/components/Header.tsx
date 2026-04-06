@@ -1,6 +1,6 @@
 import { type Agent } from '../data'
 
-export function Header({ agents }: { agents: Agent[] }) {
+export function Header({ agents, connected }: { agents: Agent[]; connected: boolean }) {
   const time = new Date().toLocaleTimeString('en-US', { hour12: false })
   const totalCost = agents.reduce((s, a) => s + a.costUsd, 0)
 
@@ -8,6 +8,12 @@ export function Header({ agents }: { agents: Agent[] }) {
     <header className="header">
       <div className="header-left">
         <h1 className="header-title">HERMES</h1>
+        <span
+          className="header-label"
+          style={{ color: connected ? 'var(--success)' : 'var(--text-disabled)' }}
+        >
+          {connected ? 'LIVE' : 'MOCK'}
+        </span>
       </div>
       <div className="header-right">
         <span className="header-label">COST <span className="header-value">${totalCost.toFixed(2)}</span></span>

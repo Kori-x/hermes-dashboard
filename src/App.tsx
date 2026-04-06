@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { agents, activityFeed, type Agent } from './data'
+import { type Agent } from './data'
+import { useHermes } from './useHermes'
 import { Header } from './components/Header'
 import { HeroSection, AttentionBanner } from './components/Stats'
 import { AgentList } from './components/AgentList'
@@ -10,6 +11,7 @@ import { SessionTimeline } from './components/SessionTimeline'
 import './app.css'
 
 export default function App() {
+  const { agents, activityFeed, connected } = useHermes()
   const [selected, setSelected] = useState<Agent | null>(null)
   const [tick, setTick] = useState(0)
 
@@ -26,16 +28,21 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  // keep selection in sync with live data
+  const selectedAgent = selected
+    ? agents.find(a => a.sessionId === selected.sessionId) || null
+    : null
+
   return (
     <div className="app" key={tick}>
-      <Header agents={agents} />
+      <Header agents={agents} connected={connected} />
       <HeroSection agents={agents} />
       <AttentionBanner agents={agents} />
 
       <div className="main">
-        <AgentList agents={agents} selected={selected} onSelect={setSelected} />
-        {selected ? (
-          <AgentDetail agent={selected} onClose={() => setSelected(null)} />
+        <AgentList agents={agents} selected={selectedAgent} onSelect={setSelected} />
+        {selectedAgent ? (
+          <AgentDetail agent={selectedAgent} onClose={() => setSelected(null)} />
         ) : (
           <div className="sidebar">
             <ToolBreakdown agents={agents} />
