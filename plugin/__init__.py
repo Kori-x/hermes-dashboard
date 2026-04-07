@@ -1,19 +1,26 @@
 """
-Hermes Dashboard Bridge Plugin
+Hermes Dashboard + Wiki Plugin
 ================================
 
-Sends agent session events to the Hermes Dashboard server
-over a Unix domain socket at /tmp/hermes-dashboard.sock.
+Sends agent session events to the Hermes Dashboard and auto-starts
+the dashboard server on first session.
 
-Install: copy this folder to ~/.hermes/plugins/hermes_dashboard/
+Install:
+  cd hermes-dashboard && ./install.sh
+
+Dashboard: http://localhost:5173
+Wiki API:  http://localhost:3002/api/wiki
 """
 
 import json
 import logging
 import os
 import socket
+import subprocess
+import sys
 import uuid
 from collections import defaultdict
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +29,7 @@ AGENT_NAME = os.environ.get("HERMES_AGENT_NAME", "agent")
 _TOOL_CALL_IDS = defaultdict(list)
 _CURRENT_SESSION_ID = None
 _TASK_SESSION_IDS = {}
+_SERVER_PROCESS = None
 
 
 def _cwd():
@@ -68,10 +76,56 @@ def _send(payload):
         logger.debug("hermes-dashboard: send failed: %s", exc)
 
 
+def _ensure_server():
+    """Start the dashboard server if not already running."""
+    global _SERVER_PROCESS
+    if _SERVER_PROCESS and _SERVER_PROCESS.poll() is None:
+        return
+
+    # check if server is already running
+    if os.path.exists(SOCKET_PATH):
+        try:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.settimeout(0.5)
+            s.connect(SOCKET_PATH)
+            s.close()
+            return  # server already running
+        except (ConnectionRefusedError, OSError):
+            pass  # stale socket
+
+    # find the dashboard install
+    dashboard_dir = os.environ.get("HERMES_DASHBOARD_DIR")
+    if not dashboard_dir:
+        # check common locations
+        for candidate in [
+            Path.home() / "hermes-dashboard",
+            Path.home() / ".hermes" / "hermes-dashboard",
+        ]:
+            if (candidate / "server" / "index.ts").exists():
+                dashboard_dir = str(candidate)
+                break
+
+    if not dashboard_dir:
+        logger.debug("hermes-dashboard: server not found, skipping auto-start")
+        return
+
+    try:
+        _SERVER_PROCESS = subprocess.Popen(
+            ["npx", "tsx", "server/index.ts"],
+            cwd=dashboard_dir,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        logger.info("hermes-dashboard: started server (pid %d)", _SERVER_PROCESS.pid)
+    except Exception as exc:
+        logger.debug("hermes-dashboard: failed to start server: %s", exc)
+
+
 def _on_session_start(session_id="", platform="", **kwargs):
     global _CURRENT_SESSION_ID
     if session_id:
         _CURRENT_SESSION_ID = session_id
+    _ensure_server()
     _send(_base_payload(
         "SessionStart", session_id, "waiting_for_input",
         agent=AGENT_NAME, platform=platform or "cli",
@@ -147,4 +201,4 @@ def register(ctx):
     ctx.register_hook("post_tool_call", _on_post_tool_call)
     ctx.register_hook("post_llm_call", _on_post_llm_call)
     ctx.register_hook("on_session_end", _on_session_end)
-    logger.info("hermes-dashboard bridge plugin registered")
+    logger.info("hermes-dashboard plugin registered")

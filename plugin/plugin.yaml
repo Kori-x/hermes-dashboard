@@ -1,0 +1,12 @@
+name: hermes-dashboard
+version: 0.2.0
+description: Real-time dashboard + wiki for monitoring Hermes agent sessions, skills, and configuration
+author: Kori-x
+provides_tools: []
+provides_hooks:
+  - on_session_start
+  - pre_llm_call
+  - pre_tool_call
+  - post_tool_call
+  - post_llm_call
+  - on_session_end

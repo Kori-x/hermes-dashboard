@@ -1,80 +1,96 @@
 # Hermes Dashboard
 
-Real-time web dashboard for monitoring [Hermes](https://github.com/Kori-x/hermes) agent sessions. Watch multiple AI agents work in parallel -- see tool calls, session phases, token usage, and activity feeds update live.
+Real-time monitoring dashboard and auto-generated wiki for [Hermes Agent](https://github.com/NousResearch/hermes-agent).
 
-Built for teams running concurrent Hermes agents across projects.
+Plug it into any Hermes installation. It reads your skills, plugins, config, memory, and soul -- and displays everything as a searchable wiki. The live dashboard shows agent sessions, tool calls, and activity as they happen.
 
-![hermes-dashboard](https://img.shields.io/badge/hermes-dashboard-000?style=flat&labelColor=000&color=d71921)
-
-## What it does
-
-- **Live session monitoring** -- agents appear as they start, with real-time phase tracking (processing, idle, awaiting input, needs approval)
-- **Activity feed** -- chronological stream of tool calls, messages, and approvals across all sessions
-- **Agent detail view** -- per-session metrics, context window visualization, tool execution history, subagent tracking
-- **Session timeline** -- Gantt-style view of all running sessions
-- **Tool breakdown** -- aggregated tool usage across agents (Read, Edit, Bash, Grep, etc.)
-- **Approval handling** -- surfaces pending permission requests that need human input
-
-## Architecture
-
-```
-Hermes Agent (Python)
-  |
-  v
-hermes_dashboard plugin (/tmp/hermes-dashboard.sock)
-  |
-  v
-Bridge Server (Node.js, Unix socket -> WebSocket)
-  |
-  v
-React Dashboard (ws://localhost:3001)
-```
-
-The Hermes plugin hooks into agent lifecycle events (session start/end, tool use, LLM calls) and sends them over a Unix domain socket. The bridge server maintains session state and pushes updates to the browser via WebSocket. Falls back to mock data when the server isn't running.
-
-## Setup
+## Install
 
 ```bash
-# install dependencies
-npm install
+git clone https://github.com/Kori-x/hermes-dashboard.git
+cd hermes-dashboard
+./install.sh
+```
 
-# install the hermes plugin
-npm run plugin:install
+This installs the Hermes plugin, npm dependencies, and builds the dashboard.
 
-# start dashboard + bridge server
+## Usage
+
+Start the dashboard:
+
+```bash
 npm run dev
 ```
 
-Opens at `http://localhost:5173`. The bridge server runs on `ws://localhost:3001`.
+Open **http://localhost:5173**.
 
-The header shows **LIVE** when connected to the bridge server, or **MOCK** when displaying sample data.
+The plugin auto-registers with Hermes on next session start. Agent events stream to the dashboard in real-time.
+
+## What you get
+
+### Dashboard (live)
+- Agent session monitoring with phase tracking (processing, idle, awaiting input, needs approval)
+- Activity feed of tool calls, messages, and approvals across all sessions
+- Per-session detail: context window visualization, tool execution history, subagent tracking
+- Session timeline and tool usage breakdown
+
+### Wiki (auto-generated)
+- **Skills** -- all your installed skills parsed from `~/.hermes/skills/`, searchable by name/category
+- **Plugins** -- installed plugins with manifest data from `~/.hermes/plugins/`
+- **Tools** -- complete built-in tool reference (56 tools across 10 categories)
+- **CLI** -- command reference with flags
+- **Config** -- your `config.yaml` rendered live
+- **Memory** -- agent memory (MEMORY.md) and user profile (USER.md)
+- **Soul** -- agent persona (SOUL.md)
+- **Architecture** -- core loop, provider resolution, memory system, safety, plugin hooks, gateway
+- **Changelog** -- version history
+
+When the server is running, the wiki reads live from your `~/.hermes/`. When offline, it falls back to built-in reference data.
+
+## How it works
+
+```
+Hermes Agent
+  |
+  v
+hermes_dashboard plugin (hooks into session lifecycle)
+  |
+  v
+Unix socket (/tmp/hermes-dashboard.sock)
+  |
+  v
+Bridge server (Node.js)
+  ├── WebSocket :3001 --> React dashboard (live updates)
+  └── HTTP :3002 ------> Wiki API (reads ~/.hermes/)
+  |
+  v
+Browser at localhost:5173
+```
 
 ## Scripts
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start both Vite + bridge server |
-| `npm run dev:ui` | Start only the Vite dev server |
+| `npm run dev` | Start dashboard + server (dev mode) |
+| `npm run dev:ui` | Start only Vite |
 | `npm run dev:server` | Start only the bridge server |
-| `npm run build` | TypeScript check + production build |
-| `npm run plugin:install` | Copy plugin to `~/.hermes/plugins/` |
+| `npm run build` | Production build |
+| `./install.sh` | Install plugin + dependencies |
 
-## Plugin
+## Configuration
 
-The Hermes plugin at `plugin/__init__.py` registers hooks for:
-
-- `on_session_start` / `on_session_end`
-- `pre_tool_call` / `post_tool_call`
-- `pre_llm_call` / `post_llm_call`
-
-Events are sent as JSON over a Unix socket to `/tmp/hermes-dashboard.sock`. If the bridge server isn't running, events are silently dropped.
+| Env var | Default | Description |
+|---|---|---|
+| `HERMES_HOME` | `~/.hermes` | Hermes installation directory |
+| `HERMES_DASHBOARD_DIR` | auto-detected | Path to this repo (for plugin auto-start) |
+| `HERMES_AGENT_NAME` | `agent` | Agent name shown in dashboard |
 
 ## Stack
 
-- **Frontend**: React 19, TypeScript, Vite
-- **Bridge**: Node.js, ws (WebSocket), Unix domain sockets
+- **Frontend**: React 19, TypeScript, Vite, marked (markdown)
+- **Server**: Node.js, ws (WebSocket), Unix domain sockets
 - **Plugin**: Python (Hermes hook system)
-- **Styling**: Custom CSS, no framework. Dark theme with monospace typography.
+- **Styling**: Custom CSS, dark theme, monospace typography
 
 ## License
 
