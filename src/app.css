@@ -1548,6 +1548,138 @@
   color: var(--text-disabled);
 }
 
+/* tools reference */
+.wiki-tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.wiki-tool-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.wiki-tool-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.wiki-tool-name {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--interactive);
+}
+
+.wiki-tool-cat {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+}
+
+.wiki-tool-desc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.wiki-tool-params {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: var(--space-xs);
+}
+
+.wiki-param {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.wiki-param-name {
+  color: var(--text-display);
+  font-weight: 700;
+  min-width: 100px;
+}
+
+.wiki-param-type {
+  color: var(--warning);
+  min-width: 60px;
+}
+
+.wiki-param-req {
+  color: var(--accent);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 42, 53, 0.3);
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.wiki-param-desc {
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+/* CLI commands */
+.wiki-cmd-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.wiki-cmd-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.wiki-cmd-name {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.wiki-cmd-desc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.wiki-cmd-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wiki-cmd-flag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--border);
+  color: var(--text-primary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-visible);
+}
+
 /* config / code block */
 .wiki-code {
   font-family: var(--font-mono);
