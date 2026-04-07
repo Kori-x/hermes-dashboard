@@ -1,21 +1,26 @@
 :root {
-  --black: #000000;
-  --surface: #0a0a0a;
-  --surface-raised: #141414;
-  --border: #1e1e1e;
-  --border-visible: #2a2a2a;
-  --text-disabled: #555555;
-  --text-secondary: #888888;
-  --text-primary: #d4d4d4;
-  --text-display: #ffffff;
+  --black: #050508;
+  --surface: #0a0a0f;
+  --surface-raised: #12121a;
+  --border: #1a1a25;
+  --border-visible: #2a2a38;
+  --text-disabled: #4a4a5a;
+  --text-secondary: #8888a0;
+  --text-primary: #d4d4e0;
+  --text-display: #f0f0ff;
 
-  --accent: #d71921;
-  --accent-subtle: rgba(215, 25, 33, 0.12);
-  --success: #4a9e5c;
-  --success-subtle: rgba(74, 158, 92, 0.12);
-  --warning: #d4a843;
-  --warning-subtle: rgba(212, 168, 67, 0.12);
-  --interactive: #5b9bf6;
+  --accent: #ff2a35;
+  --accent-subtle: rgba(255, 42, 53, 0.10);
+  --success: #00e676;
+  --success-subtle: rgba(0, 230, 118, 0.08);
+  --warning: #ffab00;
+  --warning-subtle: rgba(255, 171, 0, 0.08);
+  --interactive: #6c9fff;
+
+  --glow-accent: rgba(255, 42, 53, 0.4);
+  --glow-success: rgba(0, 230, 118, 0.3);
+  --glow-warning: rgba(255, 171, 0, 0.3);
+  --glow-interactive: rgba(108, 159, 255, 0.3);
 
   --space-2xs: 2px;
   --space-xs: 4px;
@@ -50,6 +55,10 @@ html {
 body {
   font-family: var(--font-body);
   background: var(--black);
+  background-image:
+    radial-gradient(ellipse at 15% 15%, rgba(108, 159, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(255, 42, 53, 0.04) 0%, transparent 50%);
+  background-attachment: fixed;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -57,7 +66,7 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(108, 159, 255, 0.2);
   color: var(--text-display);
 }
 
@@ -71,10 +80,18 @@ body {
   background: var(--border-visible);
   border-radius: 2px;
 }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-disabled);
+}
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
 }
 
 @keyframes spin {
@@ -84,4 +101,24 @@ body {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes border-travel {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }

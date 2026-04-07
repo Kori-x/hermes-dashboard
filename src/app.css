@@ -3,6 +3,41 @@
   max-width: 1440px;
   margin: 0 auto;
   padding: var(--space-2xl) var(--space-2xl) var(--space-4xl);
+  position: relative;
+}
+
+/* CRT scanline overlay */
+.app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.06) 0px,
+    rgba(0, 0, 0, 0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* slow rolling scanline */
+.app::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(108, 159, 255, 0.03),
+    transparent
+  );
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 100;
 }
 
 /* ---- HEADER ---- */
@@ -29,6 +64,7 @@
   letter-spacing: -0.02em;
   color: var(--text-display);
   font-weight: 700;
+  text-shadow: 0 0 30px rgba(108, 159, 255, 0.15);
 }
 
 .header-right {
@@ -69,9 +105,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, var(--border) 0.5px, transparent 0.5px);
-  background-size: 16px 16px;
-  opacity: 0.4;
+  background-image: radial-gradient(circle, var(--border-visible) 0.5px, transparent 0.5px);
+  background-size: 20px 20px;
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -84,6 +120,7 @@
   font-weight: 400;
   position: relative;
   z-index: 1;
+  text-shadow: 0 0 60px rgba(108, 159, 255, 0.2), 0 0 120px rgba(108, 159, 255, 0.05);
 }
 
 .hero-meta {
@@ -155,6 +192,7 @@
   border-radius: var(--radius-md);
   margin-bottom: var(--space-xl);
   animation: fadeIn 300ms var(--ease);
+  box-shadow: 0 0 20px var(--glow-accent), inset 0 0 20px rgba(255, 42, 53, 0.03);
 }
 
 .attention-dot {
@@ -164,6 +202,7 @@
   background: var(--accent);
   flex-shrink: 0;
   animation: pulse 1.2s var(--ease) infinite;
+  box-shadow: 0 0 8px var(--glow-accent);
 }
 
 .attention-text {
@@ -225,6 +264,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
 .agent-card {
@@ -253,15 +293,17 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background: var(--text-display);
+  background: var(--interactive);
+  box-shadow: 0 0 8px var(--glow-interactive);
 }
 
 .agent-card.needs-approval {
   background: var(--accent-subtle);
+  box-shadow: inset 0 0 30px rgba(255, 42, 53, 0.04);
 }
 
 .agent-card.needs-approval:hover {
-  background: rgba(215, 25, 33, 0.18);
+  background: rgba(255, 42, 53, 0.14);
 }
 
 .agent-card-row {
@@ -334,17 +376,20 @@
 }
 
 .phase-dot.processing {
-  background: var(--text-display);
+  background: var(--interactive);
   animation: pulse 1.5s var(--ease) infinite;
+  box-shadow: 0 0 6px var(--glow-interactive), 0 0 12px var(--glow-interactive);
 }
 
 .phase-dot.approval {
   background: var(--accent);
   animation: pulse 1s var(--ease) infinite;
+  box-shadow: 0 0 6px var(--glow-accent), 0 0 12px var(--glow-accent);
 }
 
 .phase-dot.waiting {
   background: var(--warning);
+  box-shadow: 0 0 6px var(--glow-warning);
 }
 
 .phase-dot.idle {
@@ -383,12 +428,13 @@
 /* ---- DETAIL PANEL ---- */
 
 .detail {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-visible);
   border-radius: var(--radius-lg);
   overflow: hidden;
   position: sticky;
   top: var(--space-xl);
-  animation: fadeIn 200ms var(--ease);
+  animation: slideIn 250ms var(--ease);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), 0 0 1px rgba(108, 159, 255, 0.1);
 }
 
 .detail-hero {
@@ -563,16 +609,18 @@
 
 .segment.active {
   animation: pulse 1s var(--ease) infinite;
+  box-shadow: 0 0 4px var(--glow-interactive);
 }
 
 /* approval block */
 .approval-block {
   background: var(--accent-subtle);
-  border-bottom: 1px solid rgba(215, 25, 33, 0.25);
+  border-bottom: 1px solid rgba(255, 42, 53, 0.25);
   padding: var(--space-md) var(--space-lg);
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  box-shadow: inset 0 0 40px rgba(255, 42, 53, 0.05);
 }
 
 .approval-block-label {
@@ -612,9 +660,10 @@
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  transition: opacity 200ms var(--ease);
-  background: var(--text-display);
+  transition: all 200ms var(--ease);
+  background: var(--success);
   color: var(--black);
+  box-shadow: 0 0 12px var(--glow-success);
 }
 
 .btn-deny {
@@ -626,13 +675,20 @@
   border: 1px solid var(--accent);
   border-radius: 999px;
   cursor: pointer;
-  transition: opacity 200ms var(--ease);
+  transition: all 200ms var(--ease);
   background: transparent;
   color: var(--accent);
 }
 
-.btn-approve:hover, .btn-deny:hover {
-  opacity: 0.8;
+.btn-approve:hover {
+  box-shadow: 0 0 20px var(--glow-success);
+  transform: translateY(-1px);
+}
+
+.btn-deny:hover {
+  background: var(--accent-subtle);
+  box-shadow: 0 0 12px var(--glow-accent);
+  transform: translateY(-1px);
 }
 
 /* last message */
@@ -742,8 +798,9 @@
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--interactive);
   animation: pulse 1.5s var(--ease) infinite;
+  text-shadow: 0 0 6px var(--glow-interactive);
 }
 
 /* subagent */
@@ -765,9 +822,11 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--interactive);
-  background: rgba(91, 155, 246, 0.1);
+  background: rgba(108, 159, 255, 0.1);
   padding: 2px 8px;
   border-radius: var(--radius-sm);
+  border: 1px solid rgba(108, 159, 255, 0.2);
+  text-shadow: 0 0 4px var(--glow-interactive);
 }
 
 .subagent-desc {
@@ -822,6 +881,8 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .breakdown-header {
@@ -891,6 +952,8 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   padding: var(--space-md) var(--space-lg);
+  background: var(--surface);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .feed .section-label {
@@ -1000,6 +1063,8 @@
   position: absolute;
   height: 100%;
   min-width: 4px;
+  border-radius: 1px;
+  box-shadow: 0 0 6px rgba(108, 159, 255, 0.15);
 }
 
 .timeline-duration {
