@@ -1,17 +1,12 @@
 import { createServer as createNetServer, type Socket } from 'net'
-import { createServer as createHttpServer, type IncomingMessage, type ServerResponse } from 'http'
 import { WebSocketServer, WebSocket } from 'ws'
-import { unlinkSync, existsSync, readFileSync, readdirSync, statSync } from 'fs'
-import { join } from 'path'
-import { homedir } from 'os'
+import { unlinkSync, existsSync } from 'fs'
 
 const SOCKET_PATH = '/tmp/hermes-dashboard.sock'
 const WS_PORT = 3001
-const HTTP_PORT = 3002
-const HERMES_HOME = process.env.HERMES_HOME || join(homedir(), '.hermes')
 
 // =========================================================================
-// Dashboard state (unchanged)
+// Dashboard state
 // =========================================================================
 
 interface ToolEntry {
@@ -229,165 +224,6 @@ function serializeState(): string {
     })),
   })
 }
-
-// =========================================================================
-// Wiki API -- reads ~/.hermes/ and serves as JSON
-// =========================================================================
-
-function readFileOr(path: string, fallback: string): string {
-  try { return readFileSync(path, 'utf-8') } catch { return fallback }
-}
-
-function parseSkillFrontmatter(content: string): { meta: Record<string, unknown>; body: string } {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/)
-  if (!match) return { meta: {}, body: content }
-  const lines = match[1].split('\n')
-  const meta: Record<string, unknown> = {}
-  for (const line of lines) {
-    const idx = line.indexOf(':')
-    if (idx > 0) {
-      const key = line.slice(0, idx).trim()
-      let val: unknown = line.slice(idx + 1).trim()
-      if (typeof val === 'string' && val.startsWith('[') && val.endsWith(']')) {
-        val = val.slice(1, -1).split(',').map(s => s.trim())
-      }
-      meta[key] = val
-    }
-  }
-  return { meta, body: match[2] }
-}
-
-function getSkills(): { name: string; category: string; meta: Record<string, unknown>; body: string }[] {
-  const skillsDir = join(HERMES_HOME, 'skills')
-  if (!existsSync(skillsDir)) return []
-
-  const results: { name: string; category: string; meta: Record<string, unknown>; body: string }[] = []
-
-  for (const entry of readdirSync(skillsDir)) {
-    const entryPath = join(skillsDir, entry)
-    if (!statSync(entryPath).isDirectory()) continue
-
-    // could be a category dir or a direct skill dir
-    const skillMd = join(entryPath, 'SKILL.md')
-    if (existsSync(skillMd)) {
-      const { meta, body } = parseSkillFrontmatter(readFileOr(skillMd, ''))
-      results.push({ name: (meta.name as string) || entry, category: '', meta, body })
-      continue
-    }
-
-    // category dir containing skill subdirs
-    for (const sub of readdirSync(entryPath)) {
-      const subPath = join(entryPath, sub)
-      if (!statSync(subPath).isDirectory()) continue
-      const subSkillMd = join(subPath, 'SKILL.md')
-      if (existsSync(subSkillMd)) {
-        const { meta, body } = parseSkillFrontmatter(readFileOr(subSkillMd, ''))
-        results.push({ name: (meta.name as string) || sub, category: entry, meta, body })
-      }
-    }
-  }
-
-  return results.sort((a, b) => a.name.localeCompare(b.name))
-}
-
-function getPlugins(): { name: string; manifest: Record<string, unknown> }[] {
-  const pluginsDir = join(HERMES_HOME, 'plugins')
-  if (!existsSync(pluginsDir)) return []
-  const results: { name: string; manifest: Record<string, unknown> }[] = []
-
-  for (const entry of readdirSync(pluginsDir)) {
-    const entryPath = join(pluginsDir, entry)
-    if (!statSync(entryPath).isDirectory()) continue
-    if (entry.endsWith('.disabled')) continue
-    const yamlPath = join(entryPath, 'plugin.yaml')
-    if (existsSync(yamlPath)) {
-      const { meta } = parseSkillFrontmatter('---\n' + readFileOr(yamlPath, '') + '\n---\n')
-      results.push({ name: entry, manifest: meta })
-    } else {
-      results.push({ name: entry, manifest: {} })
-    }
-  }
-  return results
-}
-
-function getConfig(): string {
-  return readFileOr(join(HERMES_HOME, 'config.yaml'), '# No config found')
-}
-
-function getMemory(): { memory: string; user: string } {
-  return {
-    memory: readFileOr(join(HERMES_HOME, 'memories', 'MEMORY.md'), '# No agent memory yet'),
-    user: readFileOr(join(HERMES_HOME, 'memories', 'USER.md'), '# No user profile yet'),
-  }
-}
-
-function getSoul(): string {
-  return readFileOr(join(HERMES_HOME, 'SOUL.md'), '# No soul file found')
-}
-
-function getOverview(): Record<string, unknown> {
-  const skills = getSkills()
-  const plugins = getPlugins()
-  const categories = [...new Set(skills.map(s => s.category).filter(Boolean))]
-  return {
-    hermesHome: HERMES_HOME,
-    skillCount: skills.length,
-    pluginCount: plugins.length,
-    categories,
-    hasSoul: existsSync(join(HERMES_HOME, 'SOUL.md')),
-    hasConfig: existsSync(join(HERMES_HOME, 'config.yaml')),
-    hasMemory: existsSync(join(HERMES_HOME, 'memories', 'MEMORY.md')),
-  }
-}
-
-// =========================================================================
-// HTTP server for wiki API
-// =========================================================================
-
-function cors(res: ServerResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-  res.setHeader('Content-Type', 'application/json')
-}
-
-function json(res: ServerResponse, data: unknown) {
-  cors(res)
-  res.end(JSON.stringify(data))
-}
-
-const httpServer = createHttpServer((req: IncomingMessage, res: ServerResponse) => {
-  if (req.method === 'OPTIONS') { cors(res); res.end(); return }
-
-  const url = req.url || '/'
-
-  if (url === '/api/wiki') {
-    json(res, getOverview())
-  } else if (url === '/api/wiki/skills') {
-    json(res, getSkills())
-  } else if (url.startsWith('/api/wiki/skills/')) {
-    const name = decodeURIComponent(url.slice('/api/wiki/skills/'.length))
-    const skills = getSkills()
-    const skill = skills.find(s => s.name === name)
-    if (skill) json(res, skill)
-    else { res.statusCode = 404; json(res, { error: 'not found' }) }
-  } else if (url === '/api/wiki/plugins') {
-    json(res, getPlugins())
-  } else if (url === '/api/wiki/config') {
-    json(res, { content: getConfig() })
-  } else if (url === '/api/wiki/memory') {
-    json(res, getMemory())
-  } else if (url === '/api/wiki/soul') {
-    json(res, { content: getSoul() })
-  } else {
-    res.statusCode = 404
-    json(res, { error: 'not found' })
-  }
-})
-
-httpServer.listen(HTTP_PORT, () => {
-  console.log(`wiki API on http://localhost:${HTTP_PORT}`)
-})
 
 // =========================================================================
 // WebSocket server
