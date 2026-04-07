@@ -67,7 +67,7 @@ export const agents: Agent[] = [
   {
     sessionId: 'sess_8a1f3d',
     displayTitle: 'migrate payments to stripe v4',
-    cwd: '/Users/ash/platforma/services/payments',
+    cwd: '/home/user/projects/services/payments',
     phase: 'processing',
     lastActivity: ago(0.2),
     createdAt: ago(52),
@@ -111,7 +111,7 @@ export const agents: Agent[] = [
   {
     sessionId: 'sess_c2b7e4',
     displayTitle: 'debug OOM in image pipeline',
-    cwd: '/Users/ash/platforma/services/media',
+    cwd: '/home/user/projects/services/media',
     phase: 'waiting_for_approval',
     lastActivity: ago(0.5),
     createdAt: ago(28),
@@ -142,7 +142,7 @@ export const agents: Agent[] = [
   {
     sessionId: 'sess_f5d9a2',
     displayTitle: 'add end-to-end encryption to chat',
-    cwd: '/Users/ash/platforma/apps/web',
+    cwd: '/home/user/projects/apps/web',
     phase: 'processing',
     lastActivity: ago(0.3),
     createdAt: ago(90),
@@ -195,7 +195,7 @@ export const agents: Agent[] = [
   {
     sessionId: 'sess_a7e1b3',
     displayTitle: 'set up k8s autoscaler for workers',
-    cwd: '/Users/ash/platforma/infra',
+    cwd: '/home/user/projects/infra',
     phase: 'idle',
     lastActivity: ago(18),
     createdAt: ago(75),
@@ -224,7 +224,7 @@ export const agents: Agent[] = [
   {
     sessionId: 'sess_b4c8d1',
     displayTitle: 'write openapi spec from route handlers',
-    cwd: '/Users/ash/platforma/services/api',
+    cwd: '/home/user/projects/services/api',
     phase: 'processing',
     lastActivity: ago(0.4),
     createdAt: ago(19),
@@ -266,7 +266,7 @@ export const agents: Agent[] = [
   {
     sessionId: 'sess_e3f2a9',
     displayTitle: 'fix timezone bug in scheduling',
-    cwd: '/Users/ash/platforma/services/scheduler',
+    cwd: '/home/user/projects/services/scheduler',
     phase: 'waiting_for_input',
     lastActivity: ago(6),
     createdAt: ago(14),

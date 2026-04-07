@@ -1,7 +1,7 @@
 import { createServer as createNetServer, type Socket } from 'net'
 import { createServer as createHttpServer, type IncomingMessage, type ServerResponse } from 'http'
 import { WebSocketServer, WebSocket } from 'ws'
-import { unlinkSync, existsSync, readFileSync, readdirSync, statSync } from 'fs'
+import { unlinkSync, existsSync, readFileSync, readdirSync, statSync, realpathSync } from 'fs'
 import { join } from 'path'
 import { homedir } from 'os'
 
@@ -175,7 +175,13 @@ function serializeState(): string {
 // =========================================================================
 
 function readSafe(path: string): string {
-  try { return readFileSync(path, 'utf-8') } catch { return '' }
+  try {
+    // resolve symlinks and verify the real path is within HERMES_HOME
+    const real = realpathSync(path)
+    const hermesReal = realpathSync(HERMES_HOME)
+    if (!real.startsWith(hermesReal)) return ''
+    return readFileSync(real, 'utf-8')
+  } catch { return '' }
 }
 
 function parseFrontmatter(content: string) {
@@ -236,7 +242,6 @@ function wikiHandler(url: string): unknown {
     const plugins = scanPlugins()
     const categories = [...new Set(skills.map(s => String(s.category)).filter(Boolean))]
     return {
-      hermesHome: HERMES_HOME,
       skillCount: skills.length,
       pluginCount: plugins.length,
       categories,
@@ -251,7 +256,12 @@ function wikiHandler(url: string): unknown {
     return scanSkills().find(s => s.name === name) || null
   }
   if (url === '/api/wiki/plugins') return scanPlugins()
-  if (url === '/api/wiki/config') return { content: readSafe(join(HERMES_HOME, 'config.yaml')) || '# No config found' }
+  if (url === '/api/wiki/config') {
+    let cfg = readSafe(join(HERMES_HOME, 'config.yaml')) || '# No config found'
+    // redact anything that looks like a secret
+    cfg = cfg.replace(/(key|token|secret|password|credential|auth)([^:\n]*:\s*).+/gi, '$1$2[REDACTED]')
+    return { content: cfg }
+  }
   if (url === '/api/wiki/memory') return {
     memory: readSafe(join(HERMES_HOME, 'memories', 'MEMORY.md')) || '# No agent memory yet',
     user: readSafe(join(HERMES_HOME, 'memories', 'USER.md')) || '# No user profile yet',
@@ -264,8 +274,13 @@ function wikiHandler(url: string): unknown {
 // HTTP server
 // =========================================================================
 
+const ALLOWED_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173']
+
 const httpServer = createHttpServer((req: IncomingMessage, res: ServerResponse) => {
-  res.setHeader('Access-Control-Allow-Origin', '*')
+  const origin = req.headers.origin || ''
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.setHeader('Content-Type', 'application/json')
   if (req.method === 'OPTIONS') { res.end(); return }
@@ -280,7 +295,10 @@ httpServer.listen(HTTP_PORT, () => console.log(`wiki API on http://localhost:${H
 // WebSocket + Unix socket servers
 // =========================================================================
 
-const wss = new WebSocketServer({ port: WS_PORT })
+const wss = new WebSocketServer({
+  port: WS_PORT,
+  verifyClient: ({ origin }) => !origin || ALLOWED_ORIGINS.includes(origin),
+})
 function broadcast() {
   const data = serializeState()
   for (const client of wss.clients) { if (client.readyState === WebSocket.OPEN) client.send(data) }

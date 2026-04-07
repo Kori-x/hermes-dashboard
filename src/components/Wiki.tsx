@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import {
   overview as mockOverview, skills as mockSkills, plugins as mockPlugins,
   tools as defaultTools, commands, architecture, changelog,
@@ -16,7 +17,8 @@ type Page =
   | { skill: string }
 
 function Md({ content }: { content: string }) {
-  const html = marked.parse(content, { async: false }) as string
+  const raw = marked.parse(content, { async: false }) as string
+  const html = DOMPurify.sanitize(raw)
   return <div className="wiki-md" dangerouslySetInnerHTML={{ __html: html }} />
 }
 
@@ -166,7 +168,7 @@ export function Wiki({ onBack }: { onBack: () => void }) {
             <h1>Hermes Agent Wiki</h1>
             <p className="wiki-overview-sub">
               {isLive
-                ? <>Live knowledge base from <code>{String(ov.hermesHome || '~/.hermes')}</code></>
+                ? 'Live knowledge base from your Hermes installation'
                 : 'Reference documentation for the Hermes Agent framework'
               }
             </p>
