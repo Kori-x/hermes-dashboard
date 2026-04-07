@@ -13,6 +13,7 @@
     "plugin:install": "mkdir -p ~/.hermes/plugins/hermes_dashboard && cp plugin/__init__.py ~/.hermes/plugins/hermes_dashboard/__init__.py"
   },
   "dependencies": {
+    "marked": "^18.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "ws": "^8.20.0"

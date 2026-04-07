@@ -8,12 +8,14 @@ import { AgentDetail } from './components/AgentDetail'
 import { ToolBreakdown } from './components/ToolBreakdown'
 import { ActivityFeed } from './components/ActivityFeed'
 import { SessionTimeline } from './components/SessionTimeline'
+import { Wiki } from './components/Wiki'
 import './app.css'
 
 export default function App() {
   const { agents, activityFeed, connected } = useHermes()
   const [selected, setSelected] = useState<Agent | null>(null)
   const [now, setNow] = useState(() => Date.now())
+  const [view, setView] = useState<'dashboard' | 'wiki'>('dashboard')
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000)
@@ -28,14 +30,21 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  // keep selection in sync with live data
+  if (view === 'wiki') {
+    return (
+      <div className="app">
+        <Wiki onBack={() => setView('dashboard')} />
+      </div>
+    )
+  }
+
   const selectedAgent = selected
     ? agents.find(a => a.sessionId === selected.sessionId) || null
     : null
 
   return (
     <div className="app" key={now}>
-      <Header agents={agents} connected={connected} />
+      <Header agents={agents} connected={connected} onWiki={() => setView('wiki')} />
       <HeroSection agents={agents} />
       <AttentionBanner agents={agents} />
 

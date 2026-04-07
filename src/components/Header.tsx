@@ -1,6 +1,6 @@
 import { type Agent } from '../data'
 
-export function Header({ agents, connected }: { agents: Agent[]; connected: boolean }) {
+export function Header({ agents, connected, onWiki }: { agents: Agent[]; connected: boolean; onWiki?: () => void }) {
   const time = new Date().toLocaleTimeString('en-US', { hour12: false })
   const totalCost = agents.reduce((s, a) => s + a.costUsd, 0)
 
@@ -16,6 +16,7 @@ export function Header({ agents, connected }: { agents: Agent[]; connected: bool
         </span>
       </div>
       <div className="header-right">
+        {onWiki && <button className="header-wiki-btn" onClick={onWiki}>WIKI</button>}
         <span className="header-label">COST <span className="header-value">${totalCost.toFixed(2)}</span></span>
         <span className="header-label">{time}</span>
       </div>
