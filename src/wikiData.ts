@@ -33,13 +33,14 @@ export const overview = {
   version: '0.7.0',
   skillCount: 142,
   pluginCount: 8,
-  toolCount: 24,
+  toolCount: 56,
   sessionCount: 1847,
   totalCost: 312.48,
   categories: [
     'apple', 'productivity', 'research', 'creative', 'software-development',
     'github', 'media', 'devops', 'mlops', 'data-science', 'mcp',
-    'messaging', 'email', 'leisure', 'red-teaming', 'inference',
+    'messaging', 'email', 'leisure', 'red-teaming', 'smart-home',
+    'diagramming', 'social-media', 'gaming', 'note-taking',
   ],
 }
 
@@ -63,31 +64,22 @@ export const skills: WikiSkill[] = [
     body: `## When to Use\n\nUse when the user wants to interact with Apple Notes -- creating, reading, searching, or organizing notes.\n\n## How It Works\n\nUses AppleScript to interface with Notes.app. All operations are non-destructive by default.\n\n## Commands\n\n- Create note: \`osascript -e 'tell application "Notes" to make new note...'\`\n- List notes: queries the Notes database\n- Search: full-text search across all folders`,
   },
   {
-    name: 'slack',
-    category: 'messaging',
-    description: 'Send messages, read channels, and manage Slack workspaces',
-    version: '2.1.0',
-    platforms: ['macos', 'linux', 'windows'],
-    tags: ['Slack', 'messaging', 'team', 'notifications'],
-    body: `## When to Use\n\nUse when the user asks to send Slack messages, read channels, or interact with Slack workspaces.\n\n## Setup\n\nRequires \`SLACK_TOKEN\` environment variable with a bot or user token.\n\n## Capabilities\n\n- Send messages to channels or DMs\n- Read recent messages from channels\n- List channels and users\n- Upload files\n- React to messages\n\n## Rate Limits\n\nRespects Slack API rate limits (1 request/second for most endpoints).`,
-  },
-  {
     name: 'browser-automation',
     category: 'research',
     description: 'Headless browser automation with Playwright for web scraping and interaction',
     version: '1.2.0',
     platforms: ['macos', 'linux', 'windows'],
     tags: ['browser', 'Playwright', 'scraping', 'automation'],
-    body: `## When to Use\n\nUse for tasks requiring real browser interaction: filling forms, navigating SPAs, scraping JavaScript-rendered content, taking screenshots of web pages.\n\n## Prerequisites\n\n- Playwright installed: \`pip install playwright && playwright install\`\n\n## Capabilities\n\n- Navigate to URLs\n- Click elements, fill forms\n- Extract text and attributes\n- Take screenshots\n- Handle authentication flows\n- Wait for network idle`,
+    body: `## When to Use\n\nUse for tasks requiring real browser interaction: filling forms, navigating SPAs, scraping JavaScript-rendered content, taking screenshots of web pages.\n\n## Backends\n\n- **Browserbase** (cloud) -- no local install needed\n- **Local Chromium** -- headless via Playwright\n\n## Capabilities\n\n- Navigate, click, type, scroll via accessibility tree snapshots\n- Extract page content as markdown\n- Execute JavaScript in page context\n- Vision analysis of rendered pages\n- Screenshot capture`,
   },
   {
     name: 'web-search',
     category: 'research',
-    description: 'Search the web using multiple providers (Google, Brave, Perplexity)',
+    description: 'Search the web using Exa, Firecrawl, Tavily, or parallel multi-engine search',
     version: '1.0.0',
     platforms: ['macos', 'linux', 'windows'],
-    tags: ['search', 'web', 'Google', 'Brave'],
-    body: `## When to Use\n\nUse when you need current information not in your training data, or when the user explicitly asks you to search.\n\n## Providers\n\n1. **Brave Search** (default) -- no API key needed for basic use\n2. **Google Custom Search** -- requires API key\n3. **Perplexity** -- requires API key\n\n## Usage\n\nThe orchestrator automatically selects this skill when it detects a query requiring current information.`,
+    tags: ['search', 'web', 'Exa', 'Tavily', 'Firecrawl'],
+    body: `## When to Use\n\nUse when you need current information not in your training data.\n\n## Backends\n\n1. **Exa** -- neural search with content extraction\n2. **Firecrawl** -- web crawling and extraction\n3. **Tavily** -- AI-optimized search\n4. **Parallel** -- multi-engine aggregation\n\n## Usage\n\nThe orchestrator automatically selects this when it detects a query needing current information. Results are compressed via LLM summarization.`,
   },
   {
     name: 'git-workflow',
@@ -96,7 +88,7 @@ export const skills: WikiSkill[] = [
     version: '1.3.0',
     platforms: ['macos', 'linux', 'windows'],
     tags: ['git', 'version control', 'branching', 'PR'],
-    body: `## When to Use\n\nUse for any git-related task: creating branches, committing, rebasing, resolving merge conflicts, managing PRs.\n\n## Patterns\n\n### Feature Branch\n\`\`\`bash\ngit checkout -b feature/my-feature\n# ... make changes ...\ngit add -A && git commit -m "add feature"\ngit push -u origin feature/my-feature\ngh pr create --title "Add feature" --body "Description"\n\`\`\`\n\n### Rebase Workflow\n\`\`\`bash\ngit fetch origin\ngit rebase origin/main\n# resolve conflicts if any\ngit push --force-with-lease\n\`\`\``,
+    body: `## When to Use\n\nUse for any git-related task: creating branches, committing, rebasing, resolving merge conflicts, managing PRs.\n\n## Patterns\n\n### Feature Branch\n\`\`\`bash\ngit checkout -b feature/my-feature\ngit add -A && git commit -m "add feature"\ngit push -u origin feature/my-feature\ngh pr create --title "Add feature"\n\`\`\`\n\n### Rebase Workflow\n\`\`\`bash\ngit fetch origin\ngit rebase origin/main\ngit push --force-with-lease\n\`\`\``,
   },
   {
     name: 'docker-compose',
@@ -105,7 +97,7 @@ export const skills: WikiSkill[] = [
     version: '1.0.0',
     platforms: ['macos', 'linux'],
     tags: ['Docker', 'containers', 'orchestration', 'devops'],
-    body: `## When to Use\n\nUse when the user needs to manage Docker Compose services: starting, stopping, building, viewing logs.\n\n## Common Operations\n\n\`\`\`bash\ndocker compose up -d\ndocker compose logs -f service_name\ndocker compose build --no-cache\ndocker compose down -v\n\`\`\``,
+    body: `## When to Use\n\nUse when the user needs to manage Docker Compose services.\n\n## Common Operations\n\n\`\`\`bash\ndocker compose up -d\ndocker compose logs -f service_name\ndocker compose build --no-cache\ndocker compose down -v\n\`\`\``,
   },
   {
     name: 'kubernetes',
@@ -114,7 +106,7 @@ export const skills: WikiSkill[] = [
     version: '1.1.0',
     platforms: ['macos', 'linux'],
     tags: ['Kubernetes', 'k8s', 'pods', 'deployments'],
-    body: `## When to Use\n\nUse for Kubernetes operations: inspecting pods, scaling deployments, managing services, debugging cluster issues.\n\n## Prerequisites\n\n- \`kubectl\` installed and configured\n- Valid kubeconfig\n\n## Common Patterns\n\n\`\`\`bash\nkubectl get pods -n namespace\nkubectl logs -f pod-name\nkubectl scale deployment/name --replicas=3\nkubectl describe pod pod-name\n\`\`\``,
+    body: `## When to Use\n\nUse for Kubernetes operations: inspecting pods, scaling deployments, managing services.\n\n## Prerequisites\n\n- \`kubectl\` installed and configured\n- Valid kubeconfig\n\n## Common Patterns\n\n\`\`\`bash\nkubectl get pods -n namespace\nkubectl logs -f pod-name\nkubectl scale deployment/name --replicas=3\n\`\`\``,
   },
   {
     name: 'jupyter-notebooks',
@@ -128,69 +120,103 @@ export const skills: WikiSkill[] = [
   {
     name: 'mcp-server',
     category: 'mcp',
-    description: 'Run Hermes as an MCP (Model Context Protocol) server for tool integration',
+    description: 'Run Hermes as an MCP server or connect to external MCP tools',
     version: '1.0.0',
     platforms: ['macos', 'linux', 'windows'],
     tags: ['MCP', 'protocol', 'server', 'integration'],
-    body: `## When to Use\n\nUse when you need to expose Hermes tools to other AI systems via the Model Context Protocol.\n\n## Setup\n\n\`\`\`bash\nhermes --mcp-server --port 8080\n\`\`\`\n\n## Protocol\n\nImplements the full MCP specification including:\n- Tool discovery\n- Tool execution\n- Resource management\n- Prompt templates`,
+    body: `## When to Use\n\nUse when you need to expose Hermes tools to other AI systems or consume tools from external MCP servers.\n\n## As Server\n\n\`\`\`bash\nhermes --mcp-server --port 8080\n\`\`\`\n\n## As Client\n\nConfigure in \`~/.hermes/config.yaml\`:\n\`\`\`yaml\nmcp_servers:\n  my-server:\n    command: "npx"\n    args: ["-y", "@my/mcp-server"]\n\`\`\`\n\nTools from MCP servers are auto-registered in the tool registry.`,
   },
   {
-    name: 'computer-use',
-    category: 'autonomous-ai-agents',
-    description: 'Autonomous desktop control via Claude Computer Use API + PyAutoGUI',
-    version: '0.1.0',
+    name: 'home-assistant',
+    category: 'smart-home',
+    description: 'Control smart home devices via Home Assistant REST API',
+    version: '1.0.0',
     platforms: ['macos', 'linux', 'windows'],
-    tags: ['Computer Use', 'Desktop', 'GUI', 'Vision', 'Automation'],
-    body: `## When to Use\n\nUse for tasks that require interacting with native desktop applications, visual inspection, or GUI automation that cannot be accomplished through terminal or API tools.\n\n## How It Works\n\n1. Takes a screenshot of the real desktop\n2. Sends it to Claude with the task context\n3. Claude reasons about the screen and issues a single action\n4. Executes via PyAutoGUI (click, type, scroll, drag)\n5. Repeats until complete or max steps reached\n\n## Safety\n\n- Every action checked against dangerous command patterns\n- Rate limited to 120 actions/minute\n- PyAutoGUI failsafe: move mouse to corner to abort`,
+    tags: ['Home Assistant', 'smart home', 'IoT', 'automation'],
+    body: `## When to Use\n\nUse when the user wants to control smart home devices: lights, thermostats, locks, media players.\n\n## Tools\n\n- \`ha_list_entities\` -- browse devices by domain or area\n- \`ha_get_state\` -- check device status\n- \`ha_list_services\` -- available actions\n- \`ha_call_service\` -- execute actions (turn_on, set_temperature, etc.)\n\n## Setup\n\nRequires \`HA_URL\` and \`HA_TOKEN\` environment variables.`,
   },
   {
-    name: 'fine-tuning',
+    name: 'mixture-of-agents',
+    category: 'research',
+    description: 'Multi-layer LLM collaboration using the Mixture-of-Agents architecture',
+    version: '0.5.0',
+    platforms: ['macos', 'linux', 'windows'],
+    tags: ['MoA', 'multi-agent', 'collaboration', 'reasoning'],
+    body: `## When to Use\n\nUse for complex reasoning tasks where multiple perspectives improve output quality.\n\n## How It Works\n\nBased on the Mixture-of-Agents paper (Junlin Wang et al.):\n\n1. Multiple LLMs generate initial responses\n2. Responses are aggregated and refined\n3. A final synthesis produces the output\n\n## Configuration\n\nUse the \`moa\` toolset to enable.`,
+  },
+  {
+    name: 'rl-training',
     category: 'mlops',
-    description: 'Export training data and launch fine-tuning jobs from agent conversations',
+    description: 'Reinforcement learning training via Tinker-Atropos environments',
     version: '0.3.0',
     platforms: ['macos', 'linux'],
-    tags: ['fine-tuning', 'training', 'LoRA', 'MLOps'],
-    body: `## When to Use\n\nUse when the user wants to fine-tune a model on conversation data captured by the agent.\n\n## Pipeline\n\n1. Export: \`fabric_export\` extracts conversations into training format\n2. Filter: quality scoring removes low-signal examples\n3. Train: \`fabric_train\` launches a LoRA job via inference.sh\n4. Monitor: \`fabric_train_status\` checks progress`,
+    tags: ['RL', 'training', 'Tinker', 'Atropos', 'WandB'],
+    body: `## When to Use\n\nUse when fine-tuning models with RL or running training experiments.\n\n## Tools\n\n- \`rl_list_environments\` -- discover available training environments\n- \`rl_select_environment\` -- choose environment\n- \`rl_edit_config\` -- modify hyperparameters\n- \`rl_start_training\` -- launch training run\n- \`rl_check_status\` -- monitor progress (WandB integration)\n- \`rl_get_results\` -- retrieve trained model outputs`,
   },
 ]
 
 export const plugins: WikiPlugin[] = [
-  { name: 'agent-monitor', version: '1.0.0', description: 'Real-time agent monitoring bridge -- streams session events to external dashboards and observability tools', tools: [], hooks: ['on_session_start', 'pre_tool_call', 'post_tool_call', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
-  { name: 'vector-store', version: '1.2.0', description: 'Embedding-based long-term memory with semantic search, auto-summarization, and session context injection', tools: ['vector_write', 'vector_query', 'vector_search', 'vector_export'], hooks: ['on_session_start', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
-  { name: 'desktop-control', version: '0.1.0', description: 'Autonomous desktop control via vision model + PyAutoGUI for GUI tasks that cannot be done through terminal', tools: ['desktop_use'], hooks: [] },
+  { name: 'agent-monitor', version: '1.0.0', description: 'Real-time session event streaming to external monitoring dashboards and observability tools via Unix socket', tools: [], hooks: ['on_session_start', 'pre_tool_call', 'post_tool_call', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
+  { name: 'desktop-control', version: '0.1.0', description: 'Autonomous desktop control via vision model and PyAutoGUI for GUI tasks that cannot be done through terminal', tools: ['desktop_use'], hooks: [] },
   { name: 'notification-relay', version: '0.4.0', description: 'Push notifications to Slack, Teams, or webhooks when agents need attention or complete tasks', tools: ['notify_send'], hooks: ['on_session_start', 'on_session_end'] },
   { name: 'sandbox-runner', version: '0.3.0', description: 'Execute untrusted code in isolated Docker containers with resource limits and network policies', tools: ['sandbox_exec', 'sandbox_status'], hooks: ['pre_tool_call'] },
   { name: 'audit-logger', version: '0.6.0', description: 'Comprehensive audit trail -- logs every tool call, LLM interaction, and approval decision to structured JSON', tools: [], hooks: ['on_session_start', 'pre_tool_call', 'post_tool_call', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
   { name: 'cost-tracker', version: '0.2.0', description: 'Token usage and cost tracking per session, per agent, and per project with budget alerts', tools: ['cost_report'], hooks: ['post_llm_call', 'on_session_end'] },
   { name: 'cron-scheduler', version: '0.5.0', description: 'Scheduled task execution -- run agent tasks on cron schedules with retry logic and failure alerts', tools: ['cron_create', 'cron_list', 'cron_delete'], hooks: ['on_session_start'] },
+  { name: 'gateway-bridge', version: '1.0.0', description: 'Cross-platform messaging gateway -- connects Hermes to Telegram, Discord, Slack, Signal, Email, SMS, and 8+ other platforms', tools: ['send_message'], hooks: ['on_session_start', 'on_session_end'] },
 ]
 
 export const tools: WikiTool[] = [
-  { name: 'Read', description: 'Read a file from the filesystem', category: 'File Operations', params: [{ name: 'file_path', type: 'string', required: true, description: 'Absolute path to the file' }, { name: 'offset', type: 'integer', required: false, description: 'Line number to start from' }, { name: 'limit', type: 'integer', required: false, description: 'Number of lines to read' }] },
-  { name: 'Edit', description: 'Perform exact string replacements in files', category: 'File Operations', params: [{ name: 'file_path', type: 'string', required: true, description: 'File to modify' }, { name: 'old_string', type: 'string', required: true, description: 'Text to replace' }, { name: 'new_string', type: 'string', required: true, description: 'Replacement text' }] },
-  { name: 'Write', description: 'Write content to a file (creates or overwrites)', category: 'File Operations', params: [{ name: 'file_path', type: 'string', required: true, description: 'File to write' }, { name: 'content', type: 'string', required: true, description: 'Content to write' }] },
-  { name: 'Glob', description: 'Find files matching a glob pattern', category: 'File Operations', params: [{ name: 'pattern', type: 'string', required: true, description: 'Glob pattern (e.g. **/*.ts)' }, { name: 'path', type: 'string', required: false, description: 'Directory to search in' }] },
-  { name: 'Grep', description: 'Search file contents with regex', category: 'File Operations', params: [{ name: 'pattern', type: 'string', required: true, description: 'Regex pattern' }, { name: 'path', type: 'string', required: false, description: 'File or directory to search' }, { name: 'type', type: 'string', required: false, description: 'File type filter (js, py, etc.)' }] },
-  { name: 'Bash', description: 'Execute a shell command', category: 'Terminal', params: [{ name: 'command', type: 'string', required: true, description: 'Command to run' }, { name: 'timeout', type: 'integer', required: false, description: 'Timeout in milliseconds' }] },
-  { name: 'WebSearch', description: 'Search the web for current information', category: 'Web', params: [{ name: 'query', type: 'string', required: true, description: 'Search query' }, { name: 'provider', type: 'string', required: false, description: 'Search provider (brave, google)' }] },
-  { name: 'WebFetch', description: 'Fetch and extract content from a URL', category: 'Web', params: [{ name: 'url', type: 'string', required: true, description: 'URL to fetch' }] },
-  { name: 'memory', description: 'Read/write persistent agent memory', category: 'Memory', params: [{ name: 'action', type: 'string', required: true, description: 'add, replace, remove, or read' }, { name: 'content', type: 'string', required: false, description: 'Content to write' }] },
-  { name: 'delegate_task', description: 'Delegate a task to a subagent', category: 'Agents', params: [{ name: 'task', type: 'string', required: true, description: 'Task description for the subagent' }, { name: 'model', type: 'string', required: false, description: 'Model override for subagent' }] },
-  { name: 'computer_use', description: 'Autonomous desktop control via Computer Use API', category: 'Agents', params: [{ name: 'task_description', type: 'string', required: true, description: 'What to do on the desktop' }, { name: 'max_steps', type: 'integer', required: false, description: 'Max screenshot-action cycles' }] },
-  { name: 'fabric_write', description: 'Write an entry to the Icarus fabric memory store', category: 'Memory', params: [{ name: 'content', type: 'string', required: true, description: 'Content to persist' }, { name: 'type', type: 'string', required: true, description: 'Entry type (decision, session, dialogue, review)' }, { name: 'tags', type: 'array', required: false, description: 'Tags for retrieval' }] },
-  { name: 'fabric_recall', description: 'Search and recall entries from fabric memory', category: 'Memory', params: [{ name: 'query', type: 'string', required: true, description: 'Search query' }, { name: 'limit', type: 'integer', required: false, description: 'Max results to return' }] },
+  // File Operations
+  { name: 'read_file', description: 'Read file contents with optional line range', category: 'File Operations', params: [{ name: 'file_path', type: 'string', required: true, description: 'Path to the file' }, { name: 'offset', type: 'integer', required: false, description: 'Start line' }, { name: 'limit', type: 'integer', required: false, description: 'Number of lines' }] },
+  { name: 'write_file', description: 'Create or overwrite a file with safety checks', category: 'File Operations', params: [{ name: 'file_path', type: 'string', required: true, description: 'File to write' }, { name: 'content', type: 'string', required: true, description: 'Content to write' }] },
+  { name: 'patch', description: 'Apply fuzzy-matched patches to code files', category: 'File Operations', params: [{ name: 'file_path', type: 'string', required: true, description: 'File to patch' }, { name: 'old_string', type: 'string', required: true, description: 'Text to find' }, { name: 'new_string', type: 'string', required: true, description: 'Replacement text' }] },
+  { name: 'search_files', description: 'Search file contents and names with regex', category: 'File Operations', params: [{ name: 'pattern', type: 'string', required: true, description: 'Regex pattern' }, { name: 'path', type: 'string', required: false, description: 'Directory to search' }] },
+  // Terminal
+  { name: 'terminal', description: 'Execute shell commands in local, Docker, Modal, SSH, or Daytona environments', category: 'Terminal', params: [{ name: 'command', type: 'string', required: true, description: 'Command to run' }, { name: 'timeout', type: 'integer', required: false, description: 'Timeout in seconds' }, { name: 'background', type: 'boolean', required: false, description: 'Run in background' }] },
+  { name: 'process', description: 'Manage background processes with polling, output buffering, and crash recovery', category: 'Terminal', params: [{ name: 'action', type: 'string', required: true, description: 'start, stop, status, or output' }, { name: 'process_id', type: 'string', required: false, description: 'Target process ID' }] },
+  // Web
+  { name: 'web_search', description: 'Search the web via Exa, Firecrawl, Tavily, or parallel multi-engine', category: 'Web', params: [{ name: 'query', type: 'string', required: true, description: 'Search query' }, { name: 'backend', type: 'string', required: false, description: 'exa, firecrawl, tavily, parallel' }] },
+  { name: 'web_extract', description: 'Extract and parse web page content to markdown with compression', category: 'Web', params: [{ name: 'url', type: 'string', required: true, description: 'URL to extract' }] },
+  // Browser
+  { name: 'browser_navigate', description: 'Navigate to a URL in headless browser', category: 'Browser', params: [{ name: 'url', type: 'string', required: true, description: 'URL to navigate to' }] },
+  { name: 'browser_snapshot', description: 'Take accessibility tree snapshot of the current page', category: 'Browser', params: [] },
+  { name: 'browser_click', description: 'Click an element on the page', category: 'Browser', params: [{ name: 'element', type: 'string', required: true, description: 'Element selector or aria ref' }] },
+  { name: 'browser_type', description: 'Type text into a focused input', category: 'Browser', params: [{ name: 'text', type: 'string', required: true, description: 'Text to type' }] },
+  { name: 'browser_vision', description: 'Analyze the rendered page with a vision model', category: 'Browser', params: [{ name: 'prompt', type: 'string', required: false, description: 'Analysis prompt' }] },
+  // AI & Reasoning
+  { name: 'delegate_task', description: 'Spawn an isolated subagent with restricted toolsets and focused prompt', category: 'AI & Reasoning', params: [{ name: 'task', type: 'string', required: true, description: 'Task description' }, { name: 'toolsets', type: 'string', required: false, description: 'Comma-separated toolsets for subagent' }] },
+  { name: 'mixture_of_agents', description: 'Multi-layer LLM collaboration for complex reasoning', category: 'AI & Reasoning', params: [{ name: 'prompt', type: 'string', required: true, description: 'The question or task' }] },
+  { name: 'execute_code', description: 'Run Python scripts that call tools via RPC, collapsing multi-step pipelines', category: 'AI & Reasoning', params: [{ name: 'code', type: 'string', required: true, description: 'Python code to execute' }] },
+  // Vision & Media
+  { name: 'vision_analyze', description: 'Analyze images from URLs or files with custom prompts', category: 'Vision & Media', params: [{ name: 'image_url', type: 'string', required: true, description: 'URL or path to image' }, { name: 'prompt', type: 'string', required: false, description: 'Analysis prompt' }] },
+  { name: 'image_generate', description: 'Generate images using FAL.ai FLUX 2 Pro with upscaling', category: 'Vision & Media', params: [{ name: 'prompt', type: 'string', required: true, description: 'Image description' }, { name: 'upscale', type: 'boolean', required: false, description: 'Apply Clarity Upscaler' }] },
+  { name: 'text_to_speech', description: 'Convert text to speech via Edge TTS, ElevenLabs, OpenAI, or local NeuTTS', category: 'Vision & Media', params: [{ name: 'text', type: 'string', required: true, description: 'Text to speak' }, { name: 'backend', type: 'string', required: false, description: 'edge, elevenlabs, openai, neutts' }] },
+  // Memory & Planning
+  { name: 'memory', description: 'Persistent file-backed memory injected into system prompt each session', category: 'Memory & Planning', params: [{ name: 'action', type: 'string', required: true, description: 'add, replace, remove, or read' }, { name: 'content', type: 'string', required: false, description: 'Content to write' }] },
+  { name: 'session_search', description: 'FTS5 search over past session transcripts with LLM summarization', category: 'Memory & Planning', params: [{ name: 'query', type: 'string', required: true, description: 'Search query' }, { name: 'limit', type: 'integer', required: false, description: 'Max results' }] },
+  { name: 'todo', description: 'In-memory task list for multi-step decomposition, persistent across compression', category: 'Memory & Planning', params: [{ name: 'action', type: 'string', required: true, description: 'add, complete, remove, or list' }, { name: 'task', type: 'string', required: false, description: 'Task description' }] },
+  // Smart Home
+  { name: 'ha_call_service', description: 'Execute Home Assistant service calls (turn_on, set_temperature, etc.)', category: 'Smart Home', params: [{ name: 'domain', type: 'string', required: true, description: 'Service domain (light, climate, etc.)' }, { name: 'service', type: 'string', required: true, description: 'Service name' }, { name: 'entity_id', type: 'string', required: true, description: 'Target entity' }] },
+  { name: 'ha_get_state', description: 'Get detailed state of a Home Assistant device', category: 'Smart Home', params: [{ name: 'entity_id', type: 'string', required: true, description: 'Entity to query' }] },
+  // Messaging
+  { name: 'send_message', description: 'Send messages across Telegram, Discord, Slack, Signal, Email, SMS, and more', category: 'Messaging', params: [{ name: 'platform', type: 'string', required: true, description: 'Target platform' }, { name: 'recipient', type: 'string', required: true, description: 'Channel, user, or address' }, { name: 'message', type: 'string', required: true, description: 'Message content' }] },
+  // Scheduling
+  { name: 'cronjob', description: 'Create and manage scheduled tasks with natural language schedules', category: 'Scheduling', params: [{ name: 'action', type: 'string', required: true, description: 'create, list, update, pause, resume, remove, trigger' }, { name: 'schedule', type: 'string', required: false, description: 'Cron expression or natural language' }, { name: 'task', type: 'string', required: false, description: 'Task to execute' }] },
 ]
 
 export const commands: WikiCommand[] = [
-  { command: 'hermes', description: 'Start an interactive Hermes agent session', flags: ['--tools <toolsets>', '--model <model>', '--auto', '--mcp-server', '--port <port>', '--disable-plugins <list>'] },
+  { command: 'hermes', description: 'Start an interactive Hermes agent session', flags: ['--tools <toolsets>', '--model <model>', '--auto', '--personality <name>', '--reasoning-effort <level>'] },
+  { command: 'hermes --mcp-server', description: 'Run Hermes as an MCP (Model Context Protocol) server', flags: ['--port <port>', '--transport <stdio|http>'] },
   { command: 'hermes batch', description: 'Run a batch of tasks from a file', flags: ['--input <file>', '--output <dir>', '--parallel <n>'] },
   { command: 'hermes config', description: 'View or edit configuration', flags: ['--edit', '--reset', '--show'] },
-  { command: 'hermes plugins', description: 'List and manage installed plugins', flags: ['--install <url>', '--remove <name>', '--list', '--enable <name>', '--disable <name>'] },
-  { command: 'hermes skills', description: 'List and manage available skills', flags: ['--list', '--search <query>', '--info <name>', '--disable <name>'] },
+  { command: 'hermes plugins', description: 'List and manage installed plugins', flags: ['--install <url>', '--remove <name>', '--list'] },
+  { command: 'hermes skills', description: 'Browse and manage available skills', flags: ['--list', '--search <query>', '--info <name>'] },
   { command: 'hermes memory', description: 'Inspect persistent memory stores', flags: ['--show', '--clear', '--export <file>'] },
   { command: 'hermes auth', description: 'Configure API credentials and providers', flags: ['--setup', '--status', '--rotate'] },
   { command: 'hermes cron', description: 'Manage scheduled tasks', flags: ['--list', '--create', '--delete <id>', '--logs <id>'] },
   { command: 'hermes update', description: 'Update Hermes to the latest version', flags: ['--check', '--force'] },
+  { command: 'hermes gateway', description: 'Start the cross-platform messaging gateway', flags: ['--platform <name>', '--config <file>'] },
 ]
 
 export const architecture = `# Architecture
@@ -206,48 +232,79 @@ Orchestrator / Planner
   ├── Skill Selection (SKILL.md matching)
   ├── Tool Dispatch (registry.py)
   │     ├── pre_tool_call hooks
-  │     ├── Safety check (approval.py)
+  │     ├── Safety check (approval.py, 40+ patterns)
   │     ├── Tool execution
   │     └── post_tool_call hooks
-  ├── LLM Call
-  │     ├── pre_llm_call hooks (memory injection)
-  │     ├── API call (streaming)
-  │     └── post_llm_call hooks (learning capture)
+  ├── LLM Call (streaming, multi-provider)
+  │     ├── pre_llm_call hooks
+  │     ├── API call via OpenRouter / Nous / Anthropic / Custom
+  │     └── post_llm_call hooks
   └── Response
-        ├── Text output
+        ├── Text output (with optional TTS)
         └── Tool calls (loop back)
 \`\`\`
 
-## Memory Architecture
+## Provider Resolution
 
-Hermes uses a dual-layer memory system:
+Hermes auto-detects available AI providers in priority order:
 
-### Layer 1: Session Memory
-- Frozen at session start for prefix cache stability
-- Includes MEMORY.md + USER.md snapshots
-- Never mutated mid-session
+1. **OpenRouter** -- OPENROUTER_API_KEY
+2. **Nous Portal** -- auth.json active provider
+3. **Custom endpoint** -- config.yaml base_url
+4. **Codex OAuth** -- gpt-5.3-codex via Responses API
+5. **Native Anthropic** -- ANTHROPIC_API_KEY
+6. **Direct keys** -- z.ai, Kimi, MiniMax, etc.
 
-### Layer 2: Fabric (Icarus Plugin)
-- SQLite + FTS5 full-text search
-- Cross-agent memory sharing
-- Automatic session summarization
-- Creative state tracking (themes, questions, learnings)
-- Training data export for fine-tuning
+## Memory System
+
+### Session Memory (Built-in)
+- MEMORY.md -- agent observations, project conventions, tool quirks
+- USER.md -- user preferences and communication style
+- Frozen snapshot at session start (prefix cache stability)
+- Mid-session writes update disk but not system prompt
+
+### Session Search
+- FTS5 full-text search over all past session transcripts
+- LLM summarization for relevant context retrieval
+- SQLite-backed with relevance ranking
+
+### Memory Providers (Switchable)
+8 backends available via \`memory.provider\` in config:
+Honcho, OpenViking, Mem0, ByteRover, Hindsight, Holographic, RetainDB, Supermemory
 
 ## Safety System
 
 ### Auto Mode
-- Risk classifier categorizes every tool call
+- Risk classifier on every tool call
 - 40+ regex patterns for dangerous commands
 - Smart approval via auxiliary LLM for ambiguous cases
 - Manual fallback for high-risk operations
+- Tirith security scanner for pre-execution analysis
 
 ### Approval Flow
 1. Agent proposes tool call
 2. \`detect_dangerous_command()\` pattern matching
-3. If dangerous: block or route to human approval
-4. If safe: execute immediately
-5. Permanent allowlist for trusted patterns
+3. Dangerous: block or route to human approval
+4. Safe: execute immediately
+5. Per-session allowlist + permanent config allowlist
+
+## Terminal Backends
+
+The terminal tool supports multiple execution environments:
+- **Local** -- direct shell execution
+- **Docker** -- containerized commands
+- **Modal** -- serverless compute
+- **SSH** -- remote host execution
+- **Singularity** -- HPC container runtime
+- **Daytona** -- cloud dev environments
+
+## Browser System
+
+Headless browser automation with two backends:
+- **Browserbase** -- cloud-hosted browsers
+- **Local Chromium** -- headless via Playwright
+
+Uses accessibility tree snapshots (ariaSnapshot) instead of raw HTML for reliable element targeting.
 
 ## Plugin System
 
@@ -260,75 +317,88 @@ Plugins register via \`register(ctx)\`:
 | Hook | When | Use Case |
 |------|------|----------|
 | on_session_start | Session begins | Load context, initialize state |
-| pre_llm_call | Before API call | Inject memories, context |
-| post_llm_call | After response | Capture decisions, learnings |
-| pre_tool_call | Before tool exec | Logging, monitoring |
-| post_tool_call | After tool exec | Result processing |
+| pre_llm_call | Before API call | Inject memories, modify context |
+| post_llm_call | After response | Capture decisions, log metrics |
+| pre_tool_call | Before tool exec | Audit, sandboxing, monitoring |
+| post_tool_call | After tool exec | Result processing, telemetry |
 | on_session_end | Session ends | Summarize, persist, cleanup |
 
-## Provider Resolution
+## Gateway System
 
-Hermes auto-detects available AI providers:
-1. OpenRouter (OPENROUTER_API_KEY)
-2. Nous Portal (auth.json)
-3. Custom endpoint (config.yaml)
-4. Codex OAuth
-5. Native Anthropic
-6. Direct API keys (z.ai, Kimi, MiniMax, etc.)
+Cross-platform messaging with 13+ connectors:
+Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Mattermost, Matrix, DingTalk, Feishu/Lark, WeCom, Webhook
+
+All platforms share the same agent loop and tools with conversation continuity.
+
+## MCP Integration
+
+Hermes both serves and consumes MCP:
+- **Server mode**: expose Hermes tools to other AI systems
+- **Client mode**: auto-discover and register tools from external MCP servers
+- Configured via \`mcp_servers\` in config.yaml
+- Supports stdio and HTTP/StreamableHTTP transports
 `
 
 export const changelog = `# Changelog
 
 ## v0.7.0 (2026-04-01)
-- Added Computer Use skill (Anthropic beta)
-- Plugin system: \`inject_message()\` for external message injection
-- Auto Mode safety improvements: 12 new dangerous patterns
+- Computer Use skill via Anthropic beta API
+- Plugin \`inject_message()\` for external message injection
+- Auto Mode safety: 12 new dangerous patterns
 - Credential pool rotation for custom endpoints
-- Fix: stale OPENAI_BASE_URL in tests
+- Tinker-Atropos RL training environment integration
+- WandB metrics logging for RL runs
 
 ## v0.6.2 (2026-03-15)
-- Icarus: cross-agent feedback sharing
-- Honcho integration for multi-session context
+- Honcho cross-session context integration
 - Compression threshold now configurable
+- 8 memory provider backends (switchable via config)
 - Fix: memory snapshot race condition
 
 ## v0.6.0 (2026-03-01)
 - MCP server mode (Model Context Protocol)
+- MCP client: auto-discover tools from external servers
 - Cron scheduler for automated tasks
-- WhatsApp bridge plugin
+- Gateway: WhatsApp, Signal, Mattermost, Matrix connectors
 - 20+ new bundled skills
 - Tirith security scanner integration
 
 ## v0.5.0 (2026-02-01)
-- Icarus memory plugin (fabric write/recall)
-- Fine-tuning export pipeline
-- Creative state tracking
-- Session timeline visualization
-- Multi-agent delegation improvements
+- Session search (FTS5 over past transcripts)
+- execute_code tool (Python RPC bridge)
+- Mixture of Agents (multi-LLM collaboration)
+- Process management tool (background tasks)
+- Skills hub integration (agentskills.io)
 
 ## v0.4.0 (2026-01-15)
 - Auto Mode with risk classification
 - Smart approval via auxiliary LLM
-- Telegram and Discord bridge plugins
-- Browser automation skill (Playwright)
+- Gateway: Telegram, Discord, Slack, Email, SMS
+- Browser automation (Browserbase + local Playwright)
+- Home Assistant smart home tools
 
 ## v0.3.0 (2025-12-01)
 - Persistent memory (MEMORY.md + USER.md)
 - Skill auto-discovery and platform matching
 - Configuration system (config.yaml)
 - SOUL.md personality files
+- Image generation (FAL.ai FLUX 2 Pro)
+- Text-to-speech (Edge TTS, ElevenLabs, OpenAI)
 
 ## v0.2.0 (2025-11-01)
 - Plugin system with hook registration
 - Tool registry with availability checks
 - Context compression
+- Multi-provider support (OpenRouter, Anthropic, custom)
+- Vision analysis tool
 - Streaming responses
 
 ## v0.1.0 (2025-10-01)
 - Initial release
-- Core agent loop
+- Core agent loop with orchestrator
 - Terminal, file, and web tools
 - Basic skill system
+- Todo planning tool
 `
 
 export const mockConfig = `# Hermes Agent Configuration
@@ -349,6 +419,7 @@ memory:
   memory_char_limit: 2200
   user_char_limit: 1375
   nudge_interval: 10
+  provider: null  # honcho, mem0, openviking, etc.
 
 security:
   redact_secrets: true
@@ -364,7 +435,7 @@ plugins:
   disabled: []
 
 terminal:
-  backend: local
+  backend: local  # local, docker, modal, ssh, daytona
   timeout: 180
 
 model:
@@ -375,6 +446,12 @@ compression:
   enabled: true
   target_ratio: 0.2
   threshold: 0.85
+
+mcp_servers: {}
+  # example:
+  # my-server:
+  #   command: "npx"
+  #   args: ["-y", "@my/mcp-server"]
 `
 
 export const mockMemory = {
@@ -387,9 +464,9 @@ export const mockMemory = {
 - API routes follow /api/v1/{resource} pattern
 
 ## Tool Quirks
-- Grep with multiline flag needed for cross-line patterns
-- Edit tool fails silently if old_string isn't unique -- always provide enough context
-- Bash timeout defaults to 2 minutes, use explicit timeout for long builds
+- search_files with multiline needed for cross-line patterns
+- patch tool fails silently if old_string not unique -- provide enough context
+- terminal timeout defaults to 180s, use explicit timeout for long builds
 
 ## Learnings
 - User prefers concise responses with no trailing summaries
