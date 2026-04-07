@@ -155,14 +155,14 @@ export const skills: WikiSkill[] = [
 ]
 
 export const plugins: WikiPlugin[] = [
-  { name: 'hermes-island', version: '0.1.0', description: 'macOS Dynamic Island notch app bridge -- sends real-time session events over Unix socket for native desktop monitoring', tools: [], hooks: ['on_session_start', 'pre_tool_call', 'post_tool_call', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
-  { name: 'hermes-dashboard', version: '0.1.0', description: 'Web dashboard bridge -- sends events to the Hermes Dashboard for browser-based monitoring', tools: [], hooks: ['on_session_start', 'pre_tool_call', 'post_tool_call', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
-  { name: 'hermes-computer-use', version: '0.1.0', description: 'Claude Computer Use -- autonomous desktop control via screenshots and mouse/keyboard', tools: ['computer_use'], hooks: [] },
-  { name: 'icarus', version: '1.2.0', description: 'Persistent memory and learning loop -- fabric write/recall, cross-agent memory, session summarization, fine-tuning export', tools: ['fabric_write', 'fabric_recall', 'fabric_search', 'fabric_export', 'fabric_train', 'fabric_train_status'], hooks: ['on_session_start', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
-  { name: 'telegram-bridge', version: '0.4.0', description: 'Telegram bot integration -- receive messages and respond through Telegram', tools: ['telegram_send'], hooks: ['on_session_start'] },
-  { name: 'discord-bridge', version: '0.2.0', description: 'Discord bot integration -- interact with Discord channels and DMs', tools: ['discord_send', 'discord_read'], hooks: ['on_session_start'] },
-  { name: 'whatsapp-bridge', version: '0.3.0', description: 'WhatsApp bridge via Baileys -- send and receive WhatsApp messages', tools: ['whatsapp_send'], hooks: ['on_session_start'] },
-  { name: 'cron-scheduler', version: '0.5.0', description: 'Scheduled task execution -- run agent tasks on cron schedules', tools: ['cron_create', 'cron_list', 'cron_delete'], hooks: ['on_session_start'] },
+  { name: 'agent-monitor', version: '1.0.0', description: 'Real-time agent monitoring bridge -- streams session events to external dashboards and observability tools', tools: [], hooks: ['on_session_start', 'pre_tool_call', 'post_tool_call', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
+  { name: 'memory-fabric', version: '1.2.0', description: 'Persistent memory layer with full-text search, cross-session recall, auto-summarization, and training data export', tools: ['memory_write', 'memory_recall', 'memory_search', 'memory_export'], hooks: ['on_session_start', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
+  { name: 'desktop-control', version: '0.1.0', description: 'Autonomous desktop control via vision model + PyAutoGUI for GUI tasks that cannot be done through terminal', tools: ['desktop_use'], hooks: [] },
+  { name: 'notification-relay', version: '0.4.0', description: 'Push notifications to Slack, Teams, or webhooks when agents need attention or complete tasks', tools: ['notify_send'], hooks: ['on_session_start', 'on_session_end'] },
+  { name: 'sandbox-runner', version: '0.3.0', description: 'Execute untrusted code in isolated Docker containers with resource limits and network policies', tools: ['sandbox_exec', 'sandbox_status'], hooks: ['pre_tool_call'] },
+  { name: 'audit-logger', version: '0.6.0', description: 'Comprehensive audit trail -- logs every tool call, LLM interaction, and approval decision to structured JSON', tools: [], hooks: ['on_session_start', 'pre_tool_call', 'post_tool_call', 'pre_llm_call', 'post_llm_call', 'on_session_end'] },
+  { name: 'cost-tracker', version: '0.2.0', description: 'Token usage and cost tracking per session, per agent, and per project with budget alerts', tools: ['cost_report'], hooks: ['post_llm_call', 'on_session_end'] },
+  { name: 'cron-scheduler', version: '0.5.0', description: 'Scheduled task execution -- run agent tasks on cron schedules with retry logic and failure alerts', tools: ['cron_create', 'cron_list', 'cron_delete'], hooks: ['on_session_start'] },
 ]
 
 export const tools: WikiTool[] = [
