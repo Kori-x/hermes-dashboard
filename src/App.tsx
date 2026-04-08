@@ -9,13 +9,14 @@ import { ToolBreakdown } from './components/ToolBreakdown'
 import { ActivityFeed } from './components/ActivityFeed'
 import { SessionTimeline } from './components/SessionTimeline'
 import { Wiki } from './components/Wiki'
+import { Farzapedia } from './components/Farzapedia'
 import './app.css'
 
 export default function App() {
   const { agents, activityFeed, connected } = useHermes()
   const [selected, setSelected] = useState<Agent | null>(null)
   const [now, setNow] = useState(() => Date.now())
-  const [view, setView] = useState<'dashboard' | 'wiki'>('dashboard')
+  const [view, setView] = useState<'dashboard' | 'wiki' | 'farzapedia'>('dashboard')
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000)
@@ -38,13 +39,21 @@ export default function App() {
     )
   }
 
+  if (view === 'farzapedia') {
+    return (
+      <div className="app">
+        <Farzapedia onBack={() => setView('dashboard')} />
+      </div>
+    )
+  }
+
   const selectedAgent = selected
     ? agents.find(a => a.sessionId === selected.sessionId) || null
     : null
 
   return (
     <div className="app" key={now}>
-      <Header agents={agents} connected={connected} onWiki={() => setView('wiki')} />
+      <Header agents={agents} connected={connected} onWiki={() => setView('wiki')} onFarzapedia={() => setView('farzapedia')} />
       <HeroSection agents={agents} />
       <AttentionBanner agents={agents} />
 
